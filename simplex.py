@@ -70,8 +70,8 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables):
             p += 1
     i = 2
 
-    for x in range(len(matriz[0])-variables-1):
-        matriz[2+x][variables+x] = 1
+    for x in range(len(matriz[0])-variables-2):
+        matriz[2+x][1+variables+x] = 1
 
 
 
