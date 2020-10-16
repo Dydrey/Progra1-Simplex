@@ -1,14 +1,14 @@
 import sys
 
-archivo = sys.argv[2]
-f = open("archivo.txt")
-data = f.read().strip()
-f.close()
-
-condiciones = []
-for line in data.split('\n'):
-    condiciones.append(line.split(","))
-print(condiciones)
+def leerArhivo():
+    archivo = sys.argv[2]
+    f = open(archivo)
+    data = f.read().strip()
+    f.close()
+    condiciones = []
+    for line in data.split('\n'):
+        condiciones.append(line.split(","))
+    return(condiciones)
 
 def Metodo(metodo):
     if metodo == 0:
@@ -23,13 +23,17 @@ def Metodo(metodo):
     else:
         return("Error de metodo")
 
+condiciones = leerArhivo()
+
 definicion = condiciones[0]
-coeficientes = condiciones[1]
 
 metodo = int(definicion[0])
 optimizacion = definicion[1]
 variables = int(definicion[2])
 restricciones = int(definicion[3])
+
+coeficientes = condiciones[1]
+
 Metodo(metodo)
 
-
+#Para correrlo desde terminal: python simplex.py [-h] archivo.txt
