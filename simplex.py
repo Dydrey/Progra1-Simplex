@@ -80,17 +80,27 @@ def buscaColMenor(matriz):
     pos = 0
     menor = 99999
     while i < len(matriz[0]):
-        elemActual = matriz[2][i]
+        elemActual = matriz[1][i]
         if elemActual == 0:
             i += 1
-        elif elemActual <= menor:
+        elif elemActual < menor:
             pos = i
             menor = elemActual
         i += 1
     return pos
 
-
-
+def buscarFilMenor(matriz, colMenor):
+    i = 2
+    filMenor = 99999
+    resultado = 0
+    while i < len(matriz):
+        if (matriz[i][colMenor] != 0) and (matriz[i][len(matriz[i])-1] != 0):
+            valorLD = (matriz[i][len(matriz[i])-1] / matriz[i][colMenor])
+            if ((valorLD < filMenor) and (valorLD > 0)):
+                filMenor = valorLD
+                resultado = i
+        i += 1
+    return resultado
 
 #LEER EL ARCHIVO
 condiciones = leerArhivo()
@@ -118,6 +128,8 @@ matriz = crearMatriz(variables, restricciones)
 llenarMatriz(matriz, coeficientes, listaRestricciones, variables)
 imprimirMatriz(matriz)
 colMenor = buscaColMenor(matriz)
+filMenor = buscarFilMenor(matriz, colMenor)
+print(colMenor, filMenor)
 
 
 #Metodo(metodo)
