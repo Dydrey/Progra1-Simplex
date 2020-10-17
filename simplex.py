@@ -51,6 +51,7 @@ def imprimirMatriz(matriz):
     for row in matriz:
         print(' '.join(map(str, row)))
 
+#FUNCION PARA LLENAR LA MATRIZ CON LAS RESTRICCIONES
 def llenarMatriz(matriz, coeficientes, listaRestricciones, variables):
     #LLENA LA FUNCION IDENTIDAD EN LA MATRIZ
     for x in range(len(coeficientes)):
@@ -62,10 +63,10 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables):
         p = 0
         while j < (len(matriz[0])):
             if p == len(listaRestricciones[i])-2:
-                matriz[i+2][len(matriz[0])-1]=listaRestricciones[i][p+1]
+                matriz[i+2][len(matriz[0])-1]=int(listaRestricciones[i][p+1])
                 break
             else:
-                matriz[i+2][j] = listaRestricciones[i][p]
+                matriz[i+2][j] = int(listaRestricciones[i][p])
             j += 1
             p += 1
     i = 2
@@ -73,10 +74,24 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables):
     for x in range(len(matriz[0])-variables-2):
         matriz[2+x][1+variables+x] = 1
 
+#FUNCION PARA BUSCAR LA COLUMNA CON EL NUMERO MENOR EN LA FUCNION OBJETIVO
+def buscaColMenor(matriz):
+    i = 1
+    pos = 0
+    menor = 99999
+    while i < len(matriz[0]):
+        elemActual = matriz[2][i]
+        if elemActual == 0:
+            i += 1
+        elif elemActual <= menor:
+            pos = i
+            menor = elemActual
+        i += 1
+    return pos
 
 
 
-#matriz[fila][columna]
+
 #LEER EL ARCHIVO
 condiciones = leerArhivo()
 
@@ -102,8 +117,10 @@ while ind <= len(condiciones)-1:
 matriz = crearMatriz(variables, restricciones)
 llenarMatriz(matriz, coeficientes, listaRestricciones, variables)
 imprimirMatriz(matriz)
+colMenor = buscaColMenor(matriz)
 
-Metodo(metodo)
+
+#Metodo(metodo)
 
 
 
