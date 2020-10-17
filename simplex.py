@@ -1,5 +1,6 @@
 import sys
 
+#FUNION PARA LEER EL ARHIVO .TXT
 def leerArhivo():
     archivo = sys.argv[2]
     f = open(archivo)
@@ -46,6 +47,7 @@ def crearMatriz(variables, restricciones):
             matriz[y][0] = "x"+str(variables+1)
             variables+=1
     return matriz
+
 #IMPRIME LA MATRIZ
 def imprimirMatriz(matriz):
     for row in matriz:
@@ -89,6 +91,7 @@ def buscaColMenor(matriz):
         i += 1
     return pos
 
+#FUNCION PARA BUSCAR LA FILA QUE DIVIDA AL LADO DERECHO CON EL MENOR RESULTADO
 def buscarFilMenor(matriz, colMenor):
     i = 2
     filMenor = 99999
@@ -102,37 +105,40 @@ def buscarFilMenor(matriz, colMenor):
         i += 1
     return resultado
 
-#LEER EL ARCHIVO
-condiciones = leerArhivo()
+def main():
+    #LEER EL ARCHIVO
+    condiciones = leerArhivo()
 
-#PRIMERA LINEA DEL ARCIHVO. ESTA LA ESPECIFICACION DE LA TABLA
-definicion = condiciones[0]
+    #PRIMERA LINEA DEL ARCIHVO. ESTA LA ESPECIFICACION DE LA TABLA
+    definicion = condiciones[0]
 
-metodo = int(definicion[0])
-optimizacion = definicion[1]
-variables = int(definicion[2])
-restricciones = int(definicion[3])
-
-
-#LISTA DE COEFICIENTES DE LA FUNCION IDENTIDAD
-coeficientes = condiciones[1]
-
-#LISTA CON LAS RESTRICCIONES
-ind = 2
-listaRestricciones = []
-while ind <= len(condiciones)-1:
-    listaRestricciones.append(condiciones[ind])
-    ind += 1
-
-matriz = crearMatriz(variables, restricciones)
-llenarMatriz(matriz, coeficientes, listaRestricciones, variables)
-imprimirMatriz(matriz)
-colMenor = buscaColMenor(matriz)
-filMenor = buscarFilMenor(matriz, colMenor)
-print(colMenor, filMenor)
+    #PRIMERA LINEA DEL ARCHIVO PARSEADA
+    metodo = int(definicion[0])
+    optimizacion = definicion[1]
+    variables = int(definicion[2])
+    restricciones = int(definicion[3])
 
 
-#Metodo(metodo)
+    #SEGUNDA LINEA DEL ARCHIVO
+    coeficientes = condiciones[1]
+
+    #RESTO DEL ARCHIVO
+    #GENERA LA LISTA CON LAS RESTRICCIONES
+    ind = 2
+    listaRestricciones = []
+    while ind <= len(condiciones)-1:
+        listaRestricciones.append(condiciones[ind])
+        ind += 1
+
+    matriz = crearMatriz(variables, restricciones) #SE CREA LA MATRIZ
+    llenarMatriz(matriz, coeficientes, listaRestricciones, variables) #SE LLENA LA MATRIZ CON LOS VALORES DEL ARCHIVO
+    imprimirMatriz(matriz) #SE IMPRIME LA MATRIZ
+    colMenor = buscaColMenor(matriz)
+    filMenor = buscarFilMenor(matriz, colMenor)
+    print(colMenor, filMenor)
+
+
+main()
 
 
 
