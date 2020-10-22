@@ -1,11 +1,11 @@
 import sys
 from fractions import Fraction
 
-#VARIABLE GLOBAL PARA ALMACENAR EL PROCEDIMIENTO DE LAS TABLAS INTERMEDIAS
+# VARIABLE GLOBAL PARA ALMACENAR EL PROCEDIMIENTO DE LAS TABLAS INTERMEDIAS
 textoSolucion = ""
 
 
-#FUNION PARA LEER EL ARHIVO .TXT
+# FUNION PARA LEER EL ARHIVO .TXT
 def leerArhivo():
     archivo = sys.argv[2]
     f = open(archivo)
@@ -14,44 +14,45 @@ def leerArhivo():
     condiciones = []
     for line in data.split('\n'):
         condiciones.append(line.split(","))
-    return(condiciones)
+    return (condiciones)
 
-#LOGICA PARA DEFINIR PROCEDIMIENTO
-def Metodo(metodo,matriz):
-	#VARIABLES DE CONFIGURACION
+
+# LOGICA PARA DEFINIR PROCEDIMIENTO
+def Metodo(metodo, matriz):
+    # VARIABLES DE CONFIGURACION
     conjuntoSolucion = []
     global textoSolucion
     if metodo == 0:
         print("Simplex")
         textoSolucion += "Solución Método Simplex \n"
         conjuntoSolucion = iteracionSimplex(matriz)
-        
+
     elif metodo == 1:
         print("Gran M")
         textoSolucion = "Solución Método Gran M \n"
-        #llamada a funcion de Gran M
+        # llamada a funcion de Gran M
     elif metodo == 2:
         print("Dos Fases")
         textoSolucion = "Solución Método Dos Fases \n"
-        #llamada a funcion de Dos Fases
+        # llamada a funcion de Dos Fases
     else:
-        return("Error de metodo")
+        return ("Error de metodo")
 
     return conjuntoSolucion
 
-#CREACION DE LA MATRIZ
-def crearMatriz(variables, restricciones):
 
-    columnas = 2+variables+restricciones
-    filas = 2+restricciones
-    matriz = [[ 0 for i in range(columnas) ] for j in range(filas)]
+# CREACION DE LA MATRIZ
+def crearMatriz(variables, restricciones):
+    columnas = 2 + variables + restricciones
+    filas = 2 + restricciones
+    matriz = [[0 for i in range(columnas)] for j in range(filas)]
     for x in range(len(matriz[0])):
         if x == 0:
             matriz[0][x] = "VB"
-        elif x == len(matriz[0])-1:
+        elif x == len(matriz[0]) - 1:
             matriz[0][x] = "LD"
         else:
-            matriz[0][x] = "x"+str(x)
+            matriz[0][x] = "x" + str(x)
     ind = 1
     for y in range(len(matriz)):
         if y == 0:
@@ -59,194 +60,194 @@ def crearMatriz(variables, restricciones):
         elif y == 1:
             matriz[y][0] = "U"
         else:
-            matriz[y][0] = "x"+str(variables+1)
-            variables+=1
+            matriz[y][0] = "x" + str(variables + 1)
+            variables += 1
     return matriz
 
-#IMPRIME LA MATRIZ
+
+# IMPRIME LA MATRIZ
 def imprimirMatriz(matriz):
     for row in matriz:
         print(' \t'.join(map(str, row)))
 
-#DEVUELVE LA MATRIZ EN STRING PARA GUARDARLA EN ARCHIVO
+
+# DEVUELVE LA MATRIZ EN STRING PARA GUARDARLA EN ARCHIVO
 def matrizToString(matriz):
     stringMatriz = ""
     for row in matriz:
-        stringMatriz =  stringMatriz + (' \t'.join(map(str, row)))+"\n"
+        stringMatriz = stringMatriz + (' \t'.join(map(str, row))) + "\n"
     return stringMatriz
 
-#PEQUEÑA FUNCION PARA MOSTRAR LOS DECIMALES EN FRACCIONES
+
+# PEQUEÑA FUNCION PARA MOSTRAR LOS DECIMALES EN FRACCIONES
 def fraccion(numeroParaFraccion):
-	return str(Fraction(numeroParaFraccion).limit_denominator())
+    return str(Fraction(numeroParaFraccion).limit_denominator())
 
-#FUNCION PARA LLENAR LA MATRIZ CON LAS RESTRICCIONES
+
+# FUNCION PARA LLENAR LA MATRIZ CON LAS RESTRICCIONES
 def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizacion):
-    
-    #CONVERSION FUNCION OBJETIVO (FALTA AGREGAR CASO MIN)
+    # CONVERSION FUNCION OBJETIVO (FALTA AGREGAR CASO MIN)
     for x in range(len(coeficientes)):
-		
-		#if (optimizacion == "max"):
-		    #CASO MAX
-        matriz[1][x+1]=int(coeficientes[x])*(-1)
-        #else:
-		    
+        # if (optimizacion == "max"):
+        # CASO MAX
+        matriz[1][x + 1] = int(coeficientes[x]) * (-1)
+        # else:
 
-    #LLENA LAS RESTRICCIONES EN LA MATRIZ
+    # LLENA LAS RESTRICCIONES EN LA MATRIZ
     for i in range(len(listaRestricciones)):
         j = 1
         p = 0
         while j < (len(matriz[0])):
-            if p == len(listaRestricciones[i])-2:
-                #RESULTADOS DE EQUIVALENCIAS
-                matriz[i+2][len(matriz[0])-1]=int(listaRestricciones[i][p+1])
+            if p == len(listaRestricciones[i]) - 2:
+                # RESULTADOS DE EQUIVALENCIAS
+                matriz[i + 2][len(matriz[0]) - 1] = int(listaRestricciones[i][p + 1])
                 break
             else:
-                #COEFICIENTES RESTRICCIONES
-                matriz[i+2][j] = int(listaRestricciones[i][p])
+                # COEFICIENTES RESTRICCIONES
+                matriz[i + 2][j] = int(listaRestricciones[i][p])
             j += 1
             p += 1
     i = 2
 
-    #RELLENA LA MATRIZ IDENTIDAD
-    for x in range(len(matriz[0])-variables-2):
-        matriz[2+x][1+variables+x] = 1
+    # RELLENA LA MATRIZ IDENTIDAD
+    for x in range(len(matriz[0]) - variables - 2):
+        matriz[2 + x][1 + variables + x] = 1
 
-#FUNCION PARA BUSCAR LA COLUMNA CON EL NUMERO MENOR EN LA FUNCION OBJETIVO
+
+# FUNCION PARA BUSCAR LA COLUMNA CON EL NUMERO MENOR EN LA FUNCION OBJETIVO
 def buscaColMenor(matriz):
-    i = 1
     pos = 0
     menor = 99999
-    while i < len(matriz[0]):
-        elemActual = matriz[1][i]
-        if elemActual == 0:
-            i += 1
-        elif elemActual < menor:
-            pos = i
+    for x in range( 1, len(matriz[0])):
+        elemActual = matriz[1][x]
+        if elemActual < menor:
+            pos = x
             menor = elemActual
-        i += 1
     return pos
 
-#FUNCION PARA BUSCAR LA FILA QUE DIVIDA AL LADO DERECHO CON EL MENOR RESULTADO
+
+# FUNCION PARA BUSCAR LA FILA QUE DIVIDA AL LADO DERECHO CON EL MENOR RESULTADO
 def buscarFilMenor(matriz, colMenor):
     i = 2
     filMenor = 99999
     resultado = 0
     while i < len(matriz):
-        if (matriz[i][colMenor] != 0) and (matriz[i][len(matriz[i])-1] != 0):
-            valorLD = (matriz[i][len(matriz[i])-1] / matriz[i][colMenor])
+        if (matriz[i][colMenor] != 0) and (matriz[i][len(matriz[i]) - 1] != 0):
+            valorLD = (matriz[i][len(matriz[i]) - 1] / matriz[i][colMenor])
             if ((valorLD < filMenor) and (valorLD > 0)):
                 filMenor = valorLD
                 resultado = i
         i += 1
     return resultado
 
-#RUTINA PARA LA SOLUCION MODO SIMPLEX
+
+# RUTINA PARA LA SOLUCION MODO SIMPLEX
 def iteracionSimplex(matriz):
     global textoSolucion
-    seguirIteracion=True
+    seguirIteracion = True
     iteracion = 0
-    while(seguirIteracion):
-		
-		#BUSCA EL PIVOTE 
-        colMenor = buscaColMenor(matriz)
-        filMenor = buscarFilMenor(matriz, colMenor)
-		
+    # BUSCA EL PIVOTE
+    colMenor = buscaColMenor(matriz)
+    filMenor = buscarFilMenor(matriz, colMenor)
 
-		#GUARDAMOS LA MATRIZ EN EL STRING PARA EL ARCHIVO
-        textoSolucion+="Estado: "+str(iteracion)+"\n"
-        textoSolucion+=matrizToString(matriz)+"\n"
+    while (matriz[1][colMenor] < 0):
 
-        #DATOS SOBRE CUAL VARIABLE SALE Y CUAL ENTRA
-        #print("La variable que sale es " + matriz[filMenor][0])
-        textoSolucion+="La VB que sale es " + matriz[filMenor][0]+"\n"
-        #print("La variable entrante es: " + matriz[0][colMenor])
-        textoSolucion+="La VB entrante es: " + matriz[0][colMenor]+"\n"
+        # GUARDAMOS LA MATRIZ EN EL STRING PARA EL ARCHIVO
+        textoSolucion += "Estado: " + str(iteracion) + "\n"
+        textoSolucion += matrizToString(matriz) + "\n"
 
-        #GUARDAMOS EL VALOR DEL PIVOTE PARA LAS ITERACIONES
+        # DATOS SOBRE CUAL VARIABLE SALE Y CUAL ENTRA
+        # print("La variable que sale es " + matriz[filMenor][0])
+        textoSolucion += "La VB que sale es " + matriz[filMenor][0] + "\n"
+        # print("La variable entrante es: " + matriz[0][colMenor])
+        textoSolucion += "La VB entrante es: " + matriz[0][colMenor] + "\n"
+
+        # GUARDAMOS EL VALOR DEL PIVOTE PARA LAS ITERACIONES
         numeroPivote = float(matriz[filMenor][colMenor])
-        textoSolucion+= "El número Pivote es: "+str(numeroPivote)+"\n"
+        textoSolucion += "El número Pivote es: " + str(numeroPivote) + "\n"
         print(textoSolucion)
 
-		#CAMBIAMOS LA VB
-        matriz[filMenor][0] =  matriz[0][colMenor]
+        '''
+        print("Iteracion: " + str(iteracion))
+        imprimirMatriz(matriz)
+        print("La VB que sale es " + str(matriz[filMenor][0]))
+        print("La VB entrante es: " + str(matriz[0][colMenor]))
+        print("")
+        #################################################################
+        '''
 
-		#CALCULAMOS LA FILA PIVOTE
-        for j in range(1,len(matriz[0])):
+        # CAMBIAMOS LA VB
+        matriz[filMenor][0] = matriz[0][colMenor]
+
+        # CALCULAMOS LA FILA PIVOTE
+        for j in range(1, len(matriz[0])):
             matriz[filMenor][j] = (float(matriz[filMenor][j]) / numeroPivote)
-		
-		#APLICAMOS CAMBIOS AL RESTO DE LAS FILAS SEGÚN NUESTRA PIVOTE
+
+        # APLICAMOS CAMBIOS AL RESTO DE LAS FILAS SEGÚN NUESTRA PIVOTE
         for i in range(1, len(matriz)):
-            #EL IF ES PARA EVITAR SOBREESCRIBIR LA FILA PIVOTE
+            # EL IF ES PARA EVITAR SOBREESCRIBIR LA FILA PIVOTE
             if (i != filMenor):
+                opuesto = (matriz[i][colMenor] * -1)
 
                 for j in range(1, len(matriz[0])):
-                    print("estoy en la columna "+str(j))
-				
-				    #ACTUALIZAMOS EL VALOR DE LAS FILAS QUE NO SON LA PIVOTE
-				    #               CADA CAMPO        COLUMNA PIVOTE           SOBRE ELEMENTO DE FILA PIVOTE
-                    print(str(matriz[i][j])+ " - " +(str(matriz[i][colMenor]) + " * " +str(matriz[filMenor][j])))
-                    
-                    if (j != len(matriz[0])-1):
-                        matriz[i][j] = matriz[i][j] -  (float(matriz[i][colMenor])) * float(matriz[filMenor][j])
-                    else:
-                        matriz[i][j] = matriz[i][j] - (float(matriz[filMenor][j])) * float(matriz[filMenor][j])
+                    actual = float(matriz[i][j])
+                    resultado = actual + (opuesto * matriz[filMenor][j])
+                    #print("Fila es: " + str(i) + " Columna es: " + str(j) + " actual es: " + str(actual))
+                    #print(str(actual) + " + (" + str(opuesto) + " * " + str(matriz[filMenor][j]) + ") = " + str(resultado))
+                    # ACTUALIZAMOS EL VALOR DE LAS FILAS QUE NO SON LA PIVOTE
+                    matriz[i][j] = resultado
 
-					#print("RESULTADO "+str(matriz[i][colMenor]))
-            
+        #print("La nueva matriz es:")
         imprimirMatriz(matriz)
-        return [-1,-1,-1] 
-	
+        iteracion += 1
+        # BUSCA EL NUEVO PIVOTE
+        colMenor = buscaColMenor(matriz)
+        filMenor = buscarFilMenor(matriz, colMenor)
+        #print("El nuevo pivote de fila es " + str(matriz[1][colMenor]) + " en la columna " + str(colMenor))
+        #print("El nuevo pivote de columa es " + str(matriz[filMenor][1]) + " en la fila " + str(filMenor))
+        #print("")
+
+# RUTINA PARA LA SOLUCION MODO GRAM M
+def iteracionGranM(matriz):
+    print("En trabajo, disculpe las molestias")
+
 
 def main():
-    #LEER EL ARCHIVO
+    # LEER EL ARCHIVO
     condiciones = leerArhivo()
 
-    #PRIMERA LINEA DEL ARCIHVO. ESTA LA ESPECIFICACION DE LA TABLA
+    # PRIMERA LINEA DEL ARCIHVO. ESTA LA ESPECIFICACION DE LA TABLA
     definicion = condiciones[0]
 
-    #PRIMERA LINEA DEL ARCHIVO PARSEADA
+    # PRIMERA LINEA DEL ARCHIVO PARSEADA
     metodo = int(definicion[0])
     optimizacion = definicion[1]
     variables = int(definicion[2])
     restricciones = int(definicion[3])
 
-
-    #SEGUNDA LINEA DEL ARCHIVO
+    # SEGUNDA LINEA DEL ARCHIVO
     coeficientes = condiciones[1]
 
-    #RESTO DEL ARCHIVO
-    #GENERA LA LISTA CON LAS RESTRICCIONES
+    # RESTO DEL ARCHIVO
+    # GENERA LA LISTA CON LAS RESTRICCIONES
     ind = 2
     listaRestricciones = []
-    while ind <= len(condiciones)-1:
+    while ind <= len(condiciones) - 1:
         listaRestricciones.append(condiciones[ind])
         ind += 1
 
-    matriz = crearMatriz(variables, restricciones) #SE CREA LA MATRIZ
-    llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizacion) #SE LLENA LA MATRIZ CON LOS VALORES DEL ARCHIVO
-    #imprimirMatriz(matriz) #SE IMPRIME LA MATRIZ
-    
-    #DECISION DE METODO, EJECUCION Y SOLUCION
-    print(Metodo(metodo,matriz))
-  
-	
-    #print(colMenor, filMenor)
-    #print(matriz[filMenor][colMenor])
+    matriz = crearMatriz(variables, restricciones)  # SE CREA LA MATRIZ
+    llenarMatriz(matriz, coeficientes, listaRestricciones, variables,
+                 optimizacion)  # SE LLENA LA MATRIZ CON LOS VALORES DEL ARCHIVO
+    # imprimirMatriz(matriz) #SE IMPRIME LA MATRIZ
 
+    # DECISION DE METODO, EJECUCION Y SOLUCION
+    print(Metodo(metodo, matriz))
+
+    # print(colMenor, filMenor)
+    # print(matriz[filMenor][colMenor])
 
 
 main()
 
-
-
-
-
-
-
-
-
-
-
-
-
-#Para correrlo desde terminal: python simplex.py [-h] archivo.txt
+# Para correrlo desde terminal: python simplex.py [-h] ejemploSimplex3.txt
