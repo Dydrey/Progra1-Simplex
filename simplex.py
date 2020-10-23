@@ -190,6 +190,7 @@ def iteracionSimplex(matriz):
                 opuesto = (matriz[i][colMenor] * -1)
 
                 for j in range(1, len(matriz[0])):
+<<<<<<< Updated upstream
                     actual = float(matriz[i][j])
                     resultado = actual + (opuesto * matriz[filMenor][j])
                     #print("Fila es: " + str(i) + " Columna es: " + str(j) + " actual es: " + str(actual))
@@ -198,6 +199,22 @@ def iteracionSimplex(matriz):
                     matriz[i][j] = resultado
 
         #print("La nueva matriz es:")
+=======
+                    print("estoy en la columna "+str(j))
+				
+				    #ACTUALIZAMOS EL VALOR DE LAS FILAS QUE NO SON LA PIVOTE
+				    #               CADA CAMPO        COLUMNA PIVOTE           SOBRE ELEMENTO DE FILA PIVOTE
+                    print(str(matriz[i][j])+ " - " +(str(matriz[i][colMenor]) + " * " +str(matriz[filMenor][j])))
+
+                    matriz[i][j] = matriz[i][j] +  ((float(matriz[i][colMenor])*(-1)) * float(matriz[filMenor][j]))
+                    #if (j != len(matriz[0])-1):
+                    #    matriz[i][j] = matriz[i][j] -  (float(matriz[i][colMenor])) * float(matriz[filMenor][j])
+                    #else:
+                    #    matriz[i][j] = matriz[i][j] - (float(matriz[filMenor][j])) * float(matriz[filMenor][j])
+
+					#print("RESULTADO "+str(matriz[i][colMenor]))
+            
+>>>>>>> Stashed changes
         imprimirMatriz(matriz)
         iteracion += 1
         # BUSCA EL NUEVO PIVOTE
