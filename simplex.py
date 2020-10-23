@@ -253,7 +253,7 @@ def main():
 
     # DECISION DE METODO, EJECUCION Y SOLUCION
     texto = Metodo(metodo, matriz)
-    archivoSolucion = open("archivoSolucion.txt", "w")
+    archivoSolucion = open("_solucion.txt", "w")
     archivoSolucion.write(texto)
     archivoSolucion.close()
 
