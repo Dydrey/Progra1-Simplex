@@ -30,7 +30,7 @@ def Metodo(metodo, matriz):
     elif metodo == 1:
         print("Gran M")
         textoSolucion = "Solución Método Gran M \n"
-        # llamada a funcion de Gran M
+        conjuntoSolucion = iteracionGranM(matriz)
     elif metodo == 2:
         print("Dos Fases")
         textoSolucion = "Solución Método Dos Fases \n"
@@ -53,7 +53,6 @@ def crearMatriz(variables, restricciones):
             matriz[0][x] = "LD"
         else:
             matriz[0][x] = "x" + str(x)
-    ind = 1
     for y in range(len(matriz)):
         if y == 0:
             matriz[y][0] = "VB"
@@ -139,6 +138,10 @@ def buscarFilMenor(matriz, colMenor):
                 resultado = i
         i += 1
     return resultado
+
+
+#def parsearGranM(matriz):
+
 
 
 # RUTINA PARA LA SOLUCION MODO SIMPLEX
@@ -267,4 +270,4 @@ def main():
 
 main()
 
-# Para correrlo desde terminal: python simplex.py [-h] ejemploSimplex3.txt
+# Para correrlo desde terminal: python simplex.py [-h]python simplex.py [-h] ejemploSimplex3.txt
