@@ -5,9 +5,15 @@ from fractions import Fraction
 textoSolucion = ""
 
 
-# FUNION PARA LEER EL ARHIVO .TXT
+# FUNCION PARA LEER EL ARCHIVO .TXT
 def leerArhivo():
-    archivo = sys.argv[2]
+    if (sys.argv[1] != "-h"):
+        archivo = sys.argv[1]
+    else:
+        print("Parametros: -h --help 'Muestra formato de archivo para la ejecucion \n'")
+        print("El formato del archivo debe ser: \nmetodo,optimizacion,numeros de variables de decision, numero de restricciones\ncoeficientes de la funcion objetivo\ncoeficientes de las restricciones y signo de restriccion")
+        print("Ejemplo: \n 0,min,3,3\n1,-2,1\n1,1,1<=,12\n2,1,1,<=,6\n-1,3,<=,9\n\n")
+        archivo = sys.argv[2]
     f = open(archivo)
     data = f.read().strip()
     f.close()
@@ -23,7 +29,6 @@ def Metodo(metodo, matriz):
     conjuntoSolucion = []
     global textoSolucion
     if metodo == 0:
-        print("Simplex")
         textoSolucion += "Solución Método Simplex \n"
         conjuntoSolucion = iteracionSimplex(matriz)
 
@@ -168,7 +173,7 @@ def iteracionSimplex(matriz):
         # GUARDAMOS EL VALOR DEL PIVOTE PARA LAS ITERACIONES
         numeroPivote = float(matriz[filMenor][colMenor])
         textoSolucion += "El número Pivote es: " + str(numeroPivote) + "\n"
-        print(textoSolucion)
+        #print(textoSolucion)
 
         '''
         print("Iteracion: " + str(iteracion))
@@ -193,7 +198,6 @@ def iteracionSimplex(matriz):
                 opuesto = (matriz[i][colMenor] * -1)
 
                 for j in range(1, len(matriz[0])):
-<<<<<<< Updated upstream
                     actual = float(matriz[i][j])
                     resultado = actual + (opuesto * matriz[filMenor][j])
                     #print("Fila es: " + str(i) + " Columna es: " + str(j) + " actual es: " + str(actual))
@@ -202,23 +206,7 @@ def iteracionSimplex(matriz):
                     matriz[i][j] = resultado
 
         #print("La nueva matriz es:")
-=======
-                    print("estoy en la columna "+str(j))
-				
-				    #ACTUALIZAMOS EL VALOR DE LAS FILAS QUE NO SON LA PIVOTE
-				    #               CADA CAMPO        COLUMNA PIVOTE           SOBRE ELEMENTO DE FILA PIVOTE
-                    print(str(matriz[i][j])+ " - " +(str(matriz[i][colMenor]) + " * " +str(matriz[filMenor][j])))
-
-                    matriz[i][j] = matriz[i][j] +  ((float(matriz[i][colMenor])*(-1)) * float(matriz[filMenor][j]))
-                    #if (j != len(matriz[0])-1):
-                    #    matriz[i][j] = matriz[i][j] -  (float(matriz[i][colMenor])) * float(matriz[filMenor][j])
-                    #else:
-                    #    matriz[i][j] = matriz[i][j] - (float(matriz[filMenor][j])) * float(matriz[filMenor][j])
-
-					#print("RESULTADO "+str(matriz[i][colMenor]))
-            
->>>>>>> Stashed changes
-        imprimirMatriz(matriz)
+        #imprimirMatriz(matriz)
         iteracion += 1
         # BUSCA EL NUEVO PIVOTE
         colMenor = buscaColMenor(matriz)
@@ -226,6 +214,8 @@ def iteracionSimplex(matriz):
         #print("El nuevo pivote de fila es " + str(matriz[1][colMenor]) + " en la columna " + str(colMenor))
         #print("El nuevo pivote de columa es " + str(matriz[filMenor][1]) + " en la fila " + str(filMenor))
         #print("")
+
+    return textoSolucion
 
 # RUTINA PARA LA SOLUCION MODO GRAM M
 def iteracionGranM(matriz):
@@ -262,7 +252,10 @@ def main():
     # imprimirMatriz(matriz) #SE IMPRIME LA MATRIZ
 
     # DECISION DE METODO, EJECUCION Y SOLUCION
-    print(Metodo(metodo, matriz))
+    texto = Metodo(metodo, matriz)
+    archivoSolucion = open("archivoSolucion.txt", "w")
+    archivoSolucion.write(texto)
+    archivoSolucion.close()
 
     # print(colMenor, filMenor)
     # print(matriz[filMenor][colMenor])
@@ -270,4 +263,4 @@ def main():
 
 main()
 
-# Para correrlo desde terminal: python simplex.py [-h]python simplex.py [-h] ejemploSimplex3.txt
+# Para correrlo desde terminal: python simplex.py -h archivo.txt
