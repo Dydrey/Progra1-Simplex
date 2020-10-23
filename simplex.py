@@ -4,6 +4,7 @@ from fractions import Fraction
 # VARIABLE GLOBAL PARA ALMACENAR EL PROCEDIMIENTO DE LAS TABLAS INTERMEDIAS
 textoSolucion = ""
 matrizSolucion = [[]]
+variables = 0
 
 
 # FUNCION PARA LEER EL ARCHIVO .TXT
@@ -12,7 +13,8 @@ def leerArhivo():
         archivo = sys.argv[1]
     else:
         print("Parametros: -h --help 'Muestra formato de archivo para la ejecucion \n'")
-        print("El formato del archivo debe ser: \nmetodo,optimizacion,numeros de variables de decision, numero de restricciones\ncoeficientes de la funcion objetivo\ncoeficientes de las restricciones y signo de restriccion")
+        print(
+            "El formato del archivo debe ser: \nmetodo,optimizacion,numeros de variables de decision, numero de restricciones\ncoeficientes de la funcion objetivo\ncoeficientes de las restricciones y signo de restriccion")
         print("Ejemplo: \n 0,min,3,3\n1,-2,1\n1,1,1<=,12\n2,1,1,<=,6\n-1,3,<=,9\n\n")
         archivo = sys.argv[2]
     f = open(archivo)
@@ -30,17 +32,17 @@ def Metodo(metodo, matriz):
     conjuntoSolucion = []
     global textoSolucion
     if metodo == 0:
-        textoSolucion += "Solución Método Simplex \n"
+        textoSolucion += "Solucion Metodo Simplex \n"
         conjuntoSolucion = iteracionSimplex(matriz)
 
     elif metodo == 1:
         print("Gran M")
-        textoSolucion = "Solución Método Gran M \n"
+        textoSolucion = "Solucion Metodo Gran M \n"
         conjuntoSolucion = iteracionGranM(matriz)
     elif metodo == 2:
         print("Dos Fases")
-        textoSolucion = "Solución Método Dos Fases \n"
-        # llamada a funcion de Dos Fases
+        textoSolucion = "Solucion Metodo Dos Fases \n"
+    # llamada a funcion de Dos Fases
     else:
         return ("Error de metodo")
 
@@ -96,7 +98,7 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizaci
         # if (optimizacion == "max"):
         # CASO MAX
         matriz[1][x + 1] = int(coeficientes[x]) * (-1)
-        # else:
+    # else:
 
     # LLENA LAS RESTRICCIONES EN LA MATRIZ
     for i in range(len(listaRestricciones)):
@@ -123,7 +125,7 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizaci
 def buscaColMenor(matriz):
     pos = 0
     menor = 99999
-    for x in range( 1, len(matriz[0])):
+    for x in range(1, len(matriz[0])):
         elemActual = matriz[1][x]
         if elemActual < menor:
             pos = x
@@ -146,50 +148,87 @@ def buscarFilMenor(matriz, colMenor):
     return resultado
 
 
-#def parsearGranM(matriz):
+# FUNCION PARA SABER SI UNA VARIABLE ES BASICA
+def esVB(matriz, variable):
+    for i in range(2, len(matriz)):
+        #print("Comparando " + variable + " con " + str(matriz[i][0]))
+        if matriz[i][0] == variable:
+            #print("Existe " + variable)
+            return True
+   # print("No existe " + variable)
+    return False
 
+# Para las soluciones degeneradas. Si en cualqueir iteracion hay una variable basica con valor o igual a cero en el lado
+#derecho la solucion es degenerada >Para todas las iteraciones<
+def esDegenerada(matriz, variables):
+    for i in range(2, len(matriz)):
+        if (matriz[i][len(matriz[0])-1] == 0):
+            return True
+    return False
+
+
+#LISTA
+def esMultiple(matriz):
+    for i in range(1, len(matriz[0])):
+        #print("Existe " + matriz[0][i] + "?")
+        existe = esVB(matriz, matriz[0][i])
+        if not (existe):
+            if (matriz[1][i]) == 0:
+                #print("El valor en " + matriz[0][i] + " es cero")
+                return True
+    return False
+
+
+# Para solcion no factible. Si al llegar al optino existe una variable basica que es una variable artificial, el problema
+# no es factible >Se hace en la ultima<
+# def esNoFactible(matriz):
+
+
+# fPara solucion no acotada. Cuando en U hay un numero negativo (Se pueden hacer iteraciones) y todos los numeros debajo de este
+# son negativos o cero entonces la solucion no es acotada >Se hace en cualquier iteracion<
+def esNoAcotada(matriz, colMenor):
+    contador = 0
+    for i in range(1, len(matriz)):
+        if (matriz[i][colMenor]) < 0:
+            contador += 1
+    if (contador == len(matriz) - 1):
+        return True
+    return False
 
 
 # RUTINA PARA LA SOLUCION MODO SIMPLEX
 def iteracionSimplex(matriz):
     global textoSolucion
     global matrizSolucion
+    global variables
     seguirIteracion = True
     iteracion = 0
     # BUSCA EL PIVOTE
     colMenor = buscaColMenor(matriz)
     filMenor = buscarFilMenor(matriz, colMenor)
 
+    print("La matriz inicial es")
+    imprimirMatriz(matriz)
+    print("")
+
     while (matriz[1][colMenor] < 0):
 
-
-
         # DATOS SOBRE CUAL VARIABLE SALE Y CUAL ENTRA
-        # print("La variable que sale es " + matriz[filMenor][0])
         textoSolucion += "La VB que sale es " + matriz[filMenor][0] + "\n"
-        # print("La variable entrante es: " + matriz[0][colMenor])
         textoSolucion += "La VB entrante es: " + matriz[0][colMenor] + "\n"
 
         # GUARDAMOS EL VALOR DEL PIVOTE PARA LAS ITERACIONES
-        numeroPivote = round(float(matriz[filMenor][colMenor]),3)
-        textoSolucion += "El número Pivote es: " + str(numeroPivote) + "\n"
-        #print(textoSolucion)
+        numeroPivote = round(float(matriz[filMenor][colMenor]), 3)
+        textoSolucion += "El numero Pivote es: " + str(numeroPivote) + "\n"
+        # print(textoSolucion)
 
-        '''
-        print("Iteracion: " + str(iteracion))
-        imprimirMatriz(matriz)
-        print("La VB que sale es " + str(matriz[filMenor][0]))
-        print("La VB entrante es: " + str(matriz[0][colMenor]))
-        print("")
-        #################################################################
-        '''
 
         # CAMBIAMOS LA VB
         matriz[filMenor][0] = matriz[0][colMenor]
 
         # CALCULAMOS LA FILA PIVOTE
         for j in range(1, len(matriz[0])):
-            matriz[filMenor][j] = round((float(matriz[filMenor][j]) / numeroPivote),4)
+            matriz[filMenor][j] = round((float(matriz[filMenor][j]) / numeroPivote), 4)
 
         # APLICAMOS CAMBIOS AL RESTO DE LAS FILAS SEGÚN NUESTRA PIVOTE
         for i in range(1, len(matriz)):
@@ -198,12 +237,17 @@ def iteracionSimplex(matriz):
                 opuesto = (matriz[i][colMenor] * -1)
 
                 for j in range(1, len(matriz[0])):
-                    actual = round(float(matriz[i][j]),3)
+                    actual = round(float(matriz[i][j]), 3)
                     resultado = actual + (opuesto * matriz[filMenor][j])
-                    #print("Fila es: " + str(i) + " Columna es: " + str(j) + " actual es: " + str(actual))
-                    #print(str(actual) + " + (" + str(opuesto) + " * " + str(matriz[filMenor][j]) + ") = " + str(resultado))
                     # ACTUALIZAMOS EL VALOR DE LAS FILAS QUE NO SON LA PIVOTE
-                    matriz[i][j] = round(resultado,3)
+                    matriz[i][j] = round(resultado, 3)
+
+
+        print("La matriz en la iteracion " + str(iteracion) + " es")
+        imprimirMatriz(matriz)
+        print("")
+        if (esDegenerada(matriz, variables)):
+            print("Es degenerada")
 
         iteracion += 1
         # BUSCA EL NUEVO PIVOTE
@@ -214,7 +258,9 @@ def iteracionSimplex(matriz):
         textoSolucion += "Estado: " + str(iteracion) + "\n"
         textoSolucion += matrizToString(matriz) + "\n"
         matrizSolucion = matriz
+
     return textoSolucion
+
 
 # RUTINA PARA LA SOLUCION MODO GRAM M
 def iteracionGranM(matriz):
@@ -257,7 +303,16 @@ def main():
     archivoSolucion.close()
     print("Matriz Solucion Final: ")
     imprimirMatriz(matrizSolucion)
-    #EVALUAR MATRIZ!!! (SOLUCION)
+
+    # EVALUACION DE LA MATRIZ FINAL
+    if(esMultiple(matrizSolucion)):
+        print("La solucion es multiple")
+
+    '''
+	if (esNoFactible(matriz)):
+		print("La solucion es no factible")
+	'''
+
 
 main()
 
