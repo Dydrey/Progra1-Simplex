@@ -3,6 +3,7 @@ from fractions import Fraction
 
 # VARIABLE GLOBAL PARA ALMACENAR EL PROCEDIMIENTO DE LAS TABLAS INTERMEDIAS
 textoSolucion = ""
+matrizSolucion = [[]]
 
 
 # FUNCION PARA LEER EL ARCHIVO .TXT
@@ -152,6 +153,7 @@ def buscarFilMenor(matriz, colMenor):
 # RUTINA PARA LA SOLUCION MODO SIMPLEX
 def iteracionSimplex(matriz):
     global textoSolucion
+    global matrizSolucion
     seguirIteracion = True
     iteracion = 0
     # BUSCA EL PIVOTE
@@ -160,9 +162,7 @@ def iteracionSimplex(matriz):
 
     while (matriz[1][colMenor] < 0):
 
-        # GUARDAMOS LA MATRIZ EN EL STRING PARA EL ARCHIVO
-        textoSolucion += "Estado: " + str(iteracion) + "\n"
-        textoSolucion += matrizToString(matriz) + "\n"
+
 
         # DATOS SOBRE CUAL VARIABLE SALE Y CUAL ENTRA
         # print("La variable que sale es " + matriz[filMenor][0])
@@ -171,7 +171,7 @@ def iteracionSimplex(matriz):
         textoSolucion += "La VB entrante es: " + matriz[0][colMenor] + "\n"
 
         # GUARDAMOS EL VALOR DEL PIVOTE PARA LAS ITERACIONES
-        numeroPivote = float(matriz[filMenor][colMenor])
+        numeroPivote = round(float(matriz[filMenor][colMenor]),3)
         textoSolucion += "El número Pivote es: " + str(numeroPivote) + "\n"
         #print(textoSolucion)
 
@@ -189,7 +189,7 @@ def iteracionSimplex(matriz):
 
         # CALCULAMOS LA FILA PIVOTE
         for j in range(1, len(matriz[0])):
-            matriz[filMenor][j] = (float(matriz[filMenor][j]) / numeroPivote)
+            matriz[filMenor][j] = round((float(matriz[filMenor][j]) / numeroPivote),4)
 
         # APLICAMOS CAMBIOS AL RESTO DE LAS FILAS SEGÚN NUESTRA PIVOTE
         for i in range(1, len(matriz)):
@@ -198,23 +198,22 @@ def iteracionSimplex(matriz):
                 opuesto = (matriz[i][colMenor] * -1)
 
                 for j in range(1, len(matriz[0])):
-                    actual = float(matriz[i][j])
+                    actual = round(float(matriz[i][j]),3)
                     resultado = actual + (opuesto * matriz[filMenor][j])
                     #print("Fila es: " + str(i) + " Columna es: " + str(j) + " actual es: " + str(actual))
                     #print(str(actual) + " + (" + str(opuesto) + " * " + str(matriz[filMenor][j]) + ") = " + str(resultado))
                     # ACTUALIZAMOS EL VALOR DE LAS FILAS QUE NO SON LA PIVOTE
-                    matriz[i][j] = resultado
+                    matriz[i][j] = round(resultado,3)
 
-        #print("La nueva matriz es:")
-        #imprimirMatriz(matriz)
         iteracion += 1
         # BUSCA EL NUEVO PIVOTE
         colMenor = buscaColMenor(matriz)
         filMenor = buscarFilMenor(matriz, colMenor)
-        #print("El nuevo pivote de fila es " + str(matriz[1][colMenor]) + " en la columna " + str(colMenor))
-        #print("El nuevo pivote de columa es " + str(matriz[filMenor][1]) + " en la fila " + str(filMenor))
-        #print("")
 
+        # GUARDAMOS LA MATRIZ EN EL STRING PARA EL ARCHIVO
+        textoSolucion += "Estado: " + str(iteracion) + "\n"
+        textoSolucion += matrizToString(matriz) + "\n"
+        matrizSolucion = matriz
     return textoSolucion
 
 # RUTINA PARA LA SOLUCION MODO GRAM M
@@ -256,10 +255,9 @@ def main():
     archivoSolucion = open("_solucion.txt", "w")
     archivoSolucion.write(texto)
     archivoSolucion.close()
-
-    # print(colMenor, filMenor)
-    # print(matriz[filMenor][colMenor])
-
+    print("Matriz Solucion Final: ")
+    imprimirMatriz(matrizSolucion)
+    #EVALUAR MATRIZ!!! (SOLUCION)
 
 main()
 
