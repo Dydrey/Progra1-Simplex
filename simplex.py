@@ -5,6 +5,7 @@ from fractions import Fraction
 textoSolucion = ""
 matrizSolucion = [[]]
 variables = 0
+solucionNoAcotada = False
 
 
 # FUNCION PARA LEER EL ARCHIVO .TXT
@@ -45,7 +46,8 @@ def Metodo(metodo, matriz):
     # llamada a funcion de Dos Fases
     else:
         return ("Error de metodo")
-
+    #VERIFICA EL RESULTADO DE LA MATRIZ
+    #textoSolucion += verificarMatriz(matriz)
     return conjuntoSolucion
 
 
@@ -97,7 +99,7 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizaci
     for x in range(len(coeficientes)):
         # if (optimizacion == "max"):
         # CASO MAX
-        matriz[1][x + 1] = int(coeficientes[x]) * (-1)
+        matriz[1][x + 1] = float(coeficientes[x]) * (-1)
     # else:
 
     # LLENA LAS RESTRICCIONES EN LA MATRIZ
@@ -107,11 +109,11 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizaci
         while j < (len(matriz[0])):
             if p == len(listaRestricciones[i]) - 2:
                 # RESULTADOS DE EQUIVALENCIAS
-                matriz[i + 2][len(matriz[0]) - 1] = int(listaRestricciones[i][p + 1])
+                matriz[i + 2][len(matriz[0]) - 1] = float(listaRestricciones[i][p + 1])
                 break
             else:
-                # COEFICIENTES RESTRICCIONES
-                matriz[i + 2][j] = int(listaRestricciones[i][p])
+                # COEFICIENTES
+                matriz[i + 2][j] = float(listaRestricciones[i][p])
             j += 1
             p += 1
     i = 2
@@ -179,7 +181,7 @@ def esMultiple(matriz):
     return False
 
 
-# Para solcion no factible. Si al llegar al optino existe una variable basica que es una variable artificial, el problema
+# Para solucion no factible. Si al llegar al optino existe una variable basica que es una variable artificial, el problema
 # no es factible >Se hace en la ultima<
 # def esNoFactible(matriz):
 
@@ -189,7 +191,7 @@ def esMultiple(matriz):
 def esNoAcotada(matriz, colMenor):
     contador = 0
     for i in range(1, len(matriz)):
-        if (matriz[i][colMenor]) < 0:
+        if (matriz[i][colMenor]) <= 0:
             contador += 1
     if (contador == len(matriz) - 1):
         return True
@@ -201,7 +203,9 @@ def iteracionSimplex(matriz):
     global textoSolucion
     global matrizSolucion
     global variables
-    seguirIteracion = True
+    global solucionNoAcotada
+    solucionDegenerada = False
+
     iteracion = 0
     # BUSCA EL PIVOTE
     colMenor = buscaColMenor(matriz)
@@ -211,7 +215,14 @@ def iteracionSimplex(matriz):
     imprimirMatriz(matriz)
     print("")
 
+    #GUARDAMOS LA MATRIZ INICIAL EN EL STRING SOLUCION
+    textoSolucion += "La matriz inicial es \n"+matrizToString(matriz)+"\n"
+
     while (matriz[1][colMenor] < 0):
+
+        if (esNoAcotada(matriz,colMenor)):
+            solucionNoAcotada = True
+            break
 
         # DATOS SOBRE CUAL VARIABLE SALE Y CUAL ENTRA
         textoSolucion += "La VB que sale es " + matriz[filMenor][0] + "\n"
@@ -243,21 +254,30 @@ def iteracionSimplex(matriz):
                     matriz[i][j] = round(resultado, 3)
 
 
-        print("La matriz en la iteracion " + str(iteracion) + " es")
-        imprimirMatriz(matriz)
-        print("")
-        if (esDegenerada(matriz, variables)):
-            print("Es degenerada")
-
-        iteracion += 1
-        # BUSCA EL NUEVO PIVOTE
-        colMenor = buscaColMenor(matriz)
-        filMenor = buscarFilMenor(matriz, colMenor)
-
         # GUARDAMOS LA MATRIZ EN EL STRING PARA EL ARCHIVO
         textoSolucion += "Estado: " + str(iteracion) + "\n"
         textoSolucion += matrizToString(matriz) + "\n"
         matrizSolucion = matriz
+
+        print("La matriz en la iteracion " + str(iteracion) + " es")
+        imprimirMatriz(matriz)
+        print("")
+        if (esDegenerada(matriz, variables)):
+            textoSolucion += "La iteracion "+str(iteracion)+" muestra una solucion Degenerada\n"
+            print("Es degenerada")
+
+
+        iteracion += 1
+
+        # BUSCA EL NUEVO PIVOTE
+        colMenor = buscaColMenor(matriz)
+        filMenor = buscarFilMenor(matriz, colMenor)
+    #AQUI CIERRA EL WHILE
+
+    if (solucionNoAcotada):
+        print("La iteracion "+str(iteracion)+" presenta una solucion no acotada")
+        textoSolucion += "La iteracion "+str(iteracion)+" presentó una solucion no acotada\n"
+
 
     return textoSolucion
 
@@ -298,16 +318,21 @@ def main():
 
     # DECISION DE METODO, EJECUCION Y SOLUCION
     texto = Metodo(metodo, matriz)
-    archivoSolucion = open("_solucion.txt", "w")
-    archivoSolucion.write(texto)
-    archivoSolucion.close()
-    print("Matriz Solucion Final: ")
-    imprimirMatriz(matrizSolucion)
+    if (solucionNoAcotada == False):
+        archivoSolucion = open("_solucion.txt", "w")
+        archivoSolucion.write(texto)
 
-    # EVALUACION DE LA MATRIZ FINAL
-    if(esMultiple(matrizSolucion)):
-        print("La solucion es multiple")
 
+        print("Matriz Solucion Final: ")
+        imprimirMatriz(matrizSolucion)
+        archivoSolucion.write("Matriz Solucion Final: \n "+matrizToString(matrizSolucion)+"\n")
+
+        # EVALUACION DE LA MATRIZ FINAL
+        if(esMultiple(matrizSolucion)):
+            archivoSolucion.write("La solucion es multiple")
+            print("La solucion es multiple")
+
+        archivoSolucion.close()
     '''
 	if (esNoFactible(matriz)):
 		print("La solucion es no factible")
