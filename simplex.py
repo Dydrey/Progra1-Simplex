@@ -100,24 +100,29 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizaci
         # if (optimizacion == "max"):
         # CASO MAX
         matriz[1][x + 1] = float(coeficientes[x]) * (-1)
-    # else:
+        # else:
 
     # LLENA LAS RESTRICCIONES EN LA MATRIZ
-    for i in range(len(listaRestricciones)):
+    posListaRestriccion = 0
+    banderaDesigualdad = False
+    for restriccion in listaRestricciones:
+        if restriccion[len(restriccion) - 2] != "<=":
+            print("La restriccion no es menor o igual, es: " + str(restriccion[len(restriccion)-2]))
+            banderaDesigualdad = True
         j = 1
         p = 0
         while j < (len(matriz[0])-2):
-            if p == len(listaRestricciones[i]) - 2:
+            if p == len(listaRestricciones[posListaRestriccion]) - 2:
                 # RESULTADOS DE EQUIVALENCIAS
-                print("La restriccion es: " + str(listaRestricciones[i][p]))
-            elif p == len(listaRestricciones[i]) - 1:
-                matriz[i + 2][len(matriz[0]) - 1] = float(listaRestricciones[i][p])
+                print("La restriccion es: " + str(listaRestricciones[posListaRestriccion][p]))
+            elif p == len(listaRestricciones[posListaRestriccion]) - 1:
+                matriz[posListaRestriccion + 2][len(matriz[0]) - 1] = float(listaRestricciones[posListaRestriccion][p])
             else:
                 # COEFICIENTES
-                matriz[i + 2][j] = float(listaRestricciones[i][p])
+                matriz[posListaRestriccion + 2][j] = float(listaRestricciones[posListaRestriccion][p])
             j += 1
             p += 1
-    i = 2
+        posListaRestriccion += 1
 
     # RELLENA LA MATRIZ IDENTIDAD
     for x in range(len(matriz[0]) - variables - 2):
