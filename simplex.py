@@ -106,11 +106,12 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizaci
     for i in range(len(listaRestricciones)):
         j = 1
         p = 0
-        while j < (len(matriz[0])):
+        while j < (len(matriz[0])-2):
             if p == len(listaRestricciones[i]) - 2:
                 # RESULTADOS DE EQUIVALENCIAS
-                matriz[i + 2][len(matriz[0]) - 1] = float(listaRestricciones[i][p + 1])
-                break
+                print("La restriccion es: " + str(listaRestricciones[i][p]))
+            elif p == len(listaRestricciones[i]) - 1:
+                matriz[i + 2][len(matriz[0]) - 1] = float(listaRestricciones[i][p])
             else:
                 # COEFICIENTES
                 matriz[i + 2][j] = float(listaRestricciones[i][p])
