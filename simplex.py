@@ -431,9 +431,9 @@ def iteracionSimplex(matriz):
         textoSolucion += matrizToString(matriz) + "\n"
         matrizSolucion = matriz
 
-        print("La matriz en la iteracion " + str(iteracion) + " es")
-        imprimirMatriz(matriz)
-        print("")
+        #print("La matriz en la iteracion " + str(iteracion) + " es")
+        #imprimirMatriz(matriz)
+        #print("")
         if (esDegenerada(matriz, variables)):
             textoSolucion += "La iteracion "+str(iteracion)+" muestra una solucion Degenerada\n"
             print("Es degenerada")
