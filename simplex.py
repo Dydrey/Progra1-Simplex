@@ -120,7 +120,6 @@ def crearMatriz(variables, restricciones, listaRestricciones, coeficientes, opti
         columnasExtra += abs(restricciones - (contadorIguales + contadorMayorIgual))
         matriz = [[0 for i in range(columnas + columnasExtra)] for j in range(filas)]
         llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizacion, listaPoscionesGranM)
-        imprimirMatriz(matriz)
 
     return matriz
 
@@ -146,7 +145,6 @@ def buscarElemEnFila(elemento, fila):
 
 def nuevaFuncionObjetivoM(matriz):
     nuevaFuncion = matriz[1]
-    print("funcion obj vieja "+str(matriz[1]))
 
     for i in range(len(matriz)): #recorre todas las filas de la matriz
 
@@ -158,8 +156,6 @@ def nuevaFuncionObjetivoM(matriz):
                 nuevaFuncion[k] += matriz[i][k] #suma los elementos de cada columna en la nueva funcion objetivo
 
     matriz[1] = nuevaFuncion
-
-    print("nueva func objetivo "+str(matriz[1]))
     return matriz
 
 
