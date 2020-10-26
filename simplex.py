@@ -146,12 +146,25 @@ def buscarElemEnFila(elemento, fila):
 
 def nuevaFuncionObjetivoM(matriz):
     nuevaFuncion = matriz[1]
+    print("nuevaFuncion "+str(matriz[1]))
+
     for i in range(len(matriz)): #recorre todas las filas de la matriz
+
         if (str(matriz[i][0]).find("S") != -1): #verifica si hay una s en las filas
-            for k in range(1, len(matriz[i][0])-1): #pivote para recorrer las columnas de la fila encontrada
+
+            print("fila encontrada "+str(matriz[i][0]))
+            print("columnas "+str(len(matriz[i])))
+
+            for k in range(1, len(matriz[i])-1): #pivote para recorrer las columnas de la fila encontrada
+                imprimirMatriz(matriz)
+
                 matriz[i][k] = matriz[i][k] * (-M)
-                nuevaFuncion[0][k] += matriz[i][k] #suma los elementos de cada columna en la nueva funcion objetivo
+                nuevaFuncion[k] += matriz[i][k] #suma los elementos de cada columna en la nueva funcion objetivo
+
     matriz[1] = nuevaFuncion
+
+    print("nueva func objetivo "+str(matriz[1]))
+    return matriz
 
 
 # FUNCION PARA LLENAR LA MATRIZ CON LAS RESTRICCIONES
@@ -388,8 +401,8 @@ def iteracionSimplex(matriz):
             break
 
         # DATOS SOBRE CUAL VARIABLE SALE Y CUAL ENTRA
-        textoSolucion += "La VB que sale es " + matriz[filMenor][0] + "\n"
-        textoSolucion += "La VB entrante es: " + matriz[0][colMenor] + "\n"
+        textoSolucion += "La VB que sale es " + str(matriz[filMenor][0]) + "\n"
+        textoSolucion += "La VB entrante es: " + str(matriz[0][colMenor]) + "\n"
 
         # GUARDAMOS EL VALOR DEL PIVOTE PARA LAS ITERACIONES
         numeroPivote = round(float(matriz[filMenor][colMenor]), 3)
