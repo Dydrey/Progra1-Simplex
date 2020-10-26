@@ -6,6 +6,7 @@ textoSolucion = ""
 matrizSolucion = [[]]
 variables = 0
 solucionNoAcotada = False
+M = 1000
 
 
 # FUNCION PARA LEER EL ARCHIVO .TXT
@@ -51,33 +52,75 @@ def Metodo(metodo, matriz):
     return conjuntoSolucion
 
 
-# CREACION DE LA MATRIZ
-def crearMatriz(variables, restricciones):
-    columnas = 2 + variables + restricciones
-    filas = 2 + restricciones
-    matriz = [[0 for i in range(columnas)] for j in range(filas)]
-    for x in range(len(matriz[0])):
-        if x == 0:
-            matriz[0][x] = "VB"
-        elif x == len(matriz[0]) - 1:
-            matriz[0][x] = "LD"
-        else:
-            matriz[0][x] = "x" + str(x)
-    for y in range(len(matriz)):
-        if y == 0:
-            matriz[y][0] = "VB"
-        elif y == 1:
-            matriz[y][0] = "U"
-        else:
-            matriz[y][0] = "x" + str(variables + 1)
-            variables += 1
-    return matriz
-
-
 # IMPRIME LA MATRIZ
 def imprimirMatriz(matriz):
     for row in matriz:
         print(' \t'.join(map(str, row)))
+
+
+# CREACION DE LA MATRIZ
+def crearMatriz(variables, restricciones, listaRestricciones, coeficientes, optimizacion):
+    columnas = 2 + variables
+    filas = 2 + restricciones
+
+    contadorIguales = 0
+    contadorMayorIgual = 0
+    banderaEspecial = False
+    listaPoscionesGranM = []
+    contador = 1 + variables
+    for restriccion in listaRestricciones:
+        # ESTE If ES PARA CREAR MATRIZ DE <=
+
+        if restriccion[len(restriccion) - 2] == "=":
+            banderaEspecial = True
+            contadorIguales += 1
+            listaPoscionesGranM.append(contador)
+
+        elif restriccion[len(restriccion) - 2] == ">=":
+            banderaEspecial = True
+            contadorMayorIgual += 1
+            contador += 1
+            listaPoscionesGranM.append(contador)
+
+        contador += 1
+
+    if banderaEspecial == False:
+
+        if restriccion[len(restriccion) - 2] == "<=":
+            matriz = [[0 for i in range(columnas + restricciones)] for j in range(filas)]
+            # ESTE FOR ES PARA LA FILA SUPERIOR
+            for x in range(len(matriz[0])):
+                if x == 0:
+                    matriz[0][x] = "VB"
+                elif x == len(matriz[0]) - 1:
+                    matriz[0][x] = "LD"
+                else:
+                    matriz[0][x] = "x" + str(x)
+            # ESTE FOR ES PARA LA COLUMNA DE LA IZQUIERDA
+            for y in range(len(matriz)):
+                if y == 0:
+                    matriz[y][0] = "VB"
+                elif y == 1:
+                    matriz[y][0] = "U"
+                else:
+                    matriz[y][0] = "x" + str(variables + 1)
+                    variables += 1
+        llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizacion, [])
+
+    else:
+        columnasExtra = 0
+        if contadorMayorIgual != 0:
+            columnasExtra += contadorMayorIgual * 2
+
+        if contadorIguales != 0:
+            columnasExtra += contadorIguales
+
+        columnasExtra += abs(restricciones - (contadorIguales + contadorMayorIgual))
+        matriz = [[0 for i in range(columnas + columnasExtra)] for j in range(filas)]
+        llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizacion, listaPoscionesGranM)
+        imprimirMatriz(matriz)
+
+    return matriz
 
 
 # DEVUELVE LA MATRIZ EN STRING PARA GUARDARLA EN ARCHIVO
@@ -94,39 +137,76 @@ def fraccion(numeroParaFraccion):
 
 
 # FUNCION PARA LLENAR LA MATRIZ CON LAS RESTRICCIONES
-def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizacion):
-    # CONVERSION FUNCION OBJETIVO (FALTA AGREGAR CASO MIN)
-    for x in range(len(coeficientes)):
-        # if (optimizacion == "max"):
-        # CASO MAX
-        matriz[1][x + 1] = float(coeficientes[x]) * (-1)
-        # else:
+def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizacion, listaArtificial):
 
-    # LLENA LAS RESTRICCIONES EN LA MATRIZ
-    posListaRestriccion = 0
-    banderaDesigualdad = False
-    for restriccion in listaRestricciones:
-        if restriccion[len(restriccion) - 2] != "<=":
-            print("La restriccion no es menor o igual, es: " + str(restriccion[len(restriccion)-2]))
-            banderaDesigualdad = True
-        j = 1
-        p = 0
-        while j < (len(matriz[0])-2):
-            if p == len(listaRestricciones[posListaRestriccion]) - 2:
-                # RESULTADOS DE EQUIVALENCIAS
-                print("La restriccion es: " + str(listaRestricciones[posListaRestriccion][p]))
-            elif p == len(listaRestricciones[posListaRestriccion]) - 1:
-                matriz[posListaRestriccion + 2][len(matriz[0]) - 1] = float(listaRestricciones[posListaRestriccion][p])
+    global M
+
+    if (len(listaArtificial) == 0):
+        # Llena la funcion objetivo
+        for x in range(len(coeficientes)):
+            matriz[1][x + 1] = float(coeficientes[x]) * (-1)
+
+        # LLENA LAS RESTRICCIONES EN LA MATRIZ
+        posListaRestriccion = 0
+        banderaDesigualdad = False
+
+        # Para cada restriccion en lista de restricciones
+        for i in range(len(listaRestricciones)):
+            j = 1
+            p = 0
+            while j < (len(matriz[0])):
+                if p == len(listaRestricciones[i]) - 2:
+                    matriz[i + 2][len(matriz[0]) - 1] = float(listaRestricciones[i][p+1])
+                    break
+                else:
+                    # COEFICIENTES
+                    matriz[i + 2][j] = float(listaRestricciones[i][p])
+                j += 1
+                p += 1
+
+        # RELLENA LA MATRIZ IDENTIDAD
+        for x in range(len(matriz[0]) - variables - 2):
+            matriz[2 + x][1 + variables + x] = 1
+
+    else:
+        for x in range(len(coeficientes)):
+            matriz[1][x + 1] = float(coeficientes[x]) * (-1)
+
+        if optimizacion == "min":
+            for x in range(len(listaArtificial)):
+                matriz[1][listaArtificial[x]] = (matriz[1][listaArtificial[x]] + M)
+        elif optimizacion == "max":
+            for x in range(len(listaArtificial)):
+                matriz[1][listaArtificial[x]] = (matriz[1][listaArtificial[x]] - M)
+
+
+
+
+
+
+
+
+
+        '''
+        for x in range(len(matriz[0])):
+            if x == 0:
+                matriz[0][x] = "VB"
+            elif x == len(matriz[0]) - 1:
+                matriz[0][x] = "LD"
             else:
-                # COEFICIENTES
-                matriz[posListaRestriccion + 2][j] = float(listaRestricciones[posListaRestriccion][p])
-            j += 1
-            p += 1
-        posListaRestriccion += 1
+                matriz[0][x] = "x" + str(x)
 
-    # RELLENA LA MATRIZ IDENTIDAD
-    for x in range(len(matriz[0]) - variables - 2):
-        matriz[2 + x][1 + variables + x] = 1
+        # ESTE FOR ES PARA LA COLUMNA DE LA IZQUIERDA
+        for y in range(len(matriz)):
+            if y == 0:
+                matriz[y][0] = "VB"
+            elif y == 1:
+                matriz[y][0] = "U"
+            else:
+                matriz[y][0] = "x" + str(variables + 1)
+                variables += 1
+        '''
+
 
 
 # FUNCION PARA BUSCAR LA COLUMNA CON EL NUMERO MENOR EN LA FUNCION OBJETIVO
@@ -317,10 +397,7 @@ def main():
         listaRestricciones.append(condiciones[ind])
         ind += 1
 
-    matriz = crearMatriz(variables, restricciones)  # SE CREA LA MATRIZ
-    llenarMatriz(matriz, coeficientes, listaRestricciones, variables,
-                 optimizacion)  # SE LLENA LA MATRIZ CON LOS VALORES DEL ARCHIVO
-    # imprimirMatriz(matriz) #SE IMPRIME LA MATRIZ
+    matriz = crearMatriz(variables, restricciones, listaRestricciones, coeficientes, optimizacion)  # SE CREA LA MATRIZ
 
     # DECISION DE METODO, EJECUCION Y SOLUCION
     texto = Metodo(metodo, matriz)
