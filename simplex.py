@@ -146,17 +146,13 @@ def buscarElemEnFila(elemento, fila):
 
 def nuevaFuncionObjetivoM(matriz):
     nuevaFuncion = matriz[1]
-    print("nuevaFuncion "+str(matriz[1]))
+    print("funcion obj vieja "+str(matriz[1]))
 
     for i in range(len(matriz)): #recorre todas las filas de la matriz
 
         if (str(matriz[i][0]).find("S") != -1): #verifica si hay una s en las filas
 
-            print("fila encontrada "+str(matriz[i][0]))
-            print("columnas "+str(len(matriz[i])))
-
             for k in range(1, len(matriz[i])-1): #pivote para recorrer las columnas de la fila encontrada
-                imprimirMatriz(matriz)
 
                 matriz[i][k] = matriz[i][k] * (-M)
                 nuevaFuncion[k] += matriz[i][k] #suma los elementos de cada columna en la nueva funcion objetivo
@@ -240,7 +236,7 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizaci
                     else:
                         # COEFICIENTES
                         matriz[i + 2][j] = float(restriccion[p])
-                        matriz[0][j] = "x" + str(variables + contadorRestriccion + 1)
+                        #matriz[0][j] = "x" + str(variables + contadorRestriccion + 1)
                     j += 1
 
                 maximo = max(matriz[i + 2][(1 + variables):][:-1])
