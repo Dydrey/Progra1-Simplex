@@ -479,7 +479,7 @@ def main():
     # DECISION DE METODO, EJECUCION Y SOLUCION
     texto = Metodo(metodo, matriz)
     if (solucionNoAcotada == False):
-        archivoSolucion = open("_solucion.txt", "w")
+        archivoSolucion = open("_solution.txt", "w")
         archivoSolucion.write(texto)
 
 
