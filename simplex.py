@@ -269,7 +269,13 @@ def esMultiple(matriz):
 
 # Para solucion no factible. Si al llegar al optino existe una variable basica que es una variable artificial, el problema
 # no es factible >Se hace en la ultima<
-# def esNoFactible(matriz):
+# se invoca desde el main, retorna verdadero para noFactible o falso,
+def esNoFactible(matriz):
+    for i in range(0, len(matriz)):
+        if str(matriz[i][0]).find("s") != -1: #busca si contiene una s en la primera columna
+            return True
+
+    return False
 
 
 # fPara solucion no acotada. Cuando en U hay un numero negativo (Se pueden hacer iteraciones) y todos los numeros debajo de este
@@ -416,11 +422,16 @@ def main():
             print("La solucion es multiple")
 
         archivoSolucion.close()
-    '''
-	if (esNoFactible(matriz)):
-		print("La solucion es no factible")
-	'''
 
+    #Datos para prueba
+    matrizPrueba = [["x1,1,2,3"],["x2,4,5,6"],["x7,7,8,9"],["x3,10,20,30"]]
+    if(esNoFactible(matrizPrueba)):
+
+        archivoSolucion = open("_solucion.txt", "w")
+        archivoSolucion.write(texto+"\nLa matriz presenta una solucion No Factible")
+        archivoSolucion.close()
+
+        print("La matriz presenta una solucion No Factible")
 
 main()
 
