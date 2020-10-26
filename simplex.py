@@ -143,6 +143,7 @@ def buscarElemEnFila(elemento, fila):
         if elemento == fila[x]:
             return x
 
+
 def nuevaFuncionObjetivoM(matriz):
     nuevaFuncion = matriz[1]
     for i in range(len(matriz)): #recorre todas las filas de la matriz
@@ -151,7 +152,7 @@ def nuevaFuncionObjetivoM(matriz):
                 matriz[i][k] = matriz[i][k] * (-M)
                 nuevaFuncion[0][k] += matriz[i][k] #suma los elementos de cada columna en la nueva funcion objetivo
     matriz[1] = nuevaFuncion
-    return matriz
+
 
 # FUNCION PARA LLENAR LA MATRIZ CON LAS RESTRICCIONES
 def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizacion, listaArtificial):
@@ -226,6 +227,7 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizaci
                     else:
                         # COEFICIENTES
                         matriz[i + 2][j] = float(restriccion[p])
+                        matriz[0][j] = "x" + str(variables + contadorRestriccion + 1)
                     j += 1
 
                 maximo = max(matriz[i + 2][(1 + variables):][:-1])
@@ -274,7 +276,7 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizaci
                 col = buscarElemEnFila(maximo, matriz[i + 2][(1 + variables):][:-1])
                 matriz[2 + i][0] = matriz[0][col + 3]
 
-        matriz = nuevaFuncionObjetivoM(matriz)
+        nuevaFuncionObjetivoM(matriz)
 
 
 
@@ -498,11 +500,6 @@ def main():
             print("La matriz presenta una solucion No Factible")
 
         archivoSolucion.close()
-    '''
-	if (esNoFactible(matriz)):
-		print("La solucion es no factible")
-	'''
-
 
 main()
 
