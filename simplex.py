@@ -7,22 +7,25 @@ matrizSolucion = [[]]
 variables = 0
 solucionNoAcotada = False
 
+nombreArchivoSolucion=""
 
 # FUNCION PARA LEER EL ARCHIVO .TXT
 def leerArhivo():
+    global nombreArchivoSolucion
     if (sys.argv[1] != "-h"):
         archivo = sys.argv[1]
     else:
         print("Parametros: -h --help 'Muestra formato de archivo para la ejecucion \n'")
         print(
             "El formato del archivo debe ser: \nmetodo,optimizacion,numeros de variables de decision, numero de restricciones\ncoeficientes de la funcion objetivo\ncoeficientes de las restricciones y signo de restriccion")
-        print("Ejemplo: \n 0,min,3,3\n1,-2,1\n1,1,1<=,12\n2,1,1,<=,6\n-1,3,<=,9\n\n")
+        print("Ejemplo: \n0,min,3,3\n1,-2,1\n1,1,1<=,12\n2,1,1,<=,6\n-1,3,<=,9\n\n")
         archivo = sys.argv[2]
     f = open(archivo)
     data = f.read().strip()
+    nombreArchivoSolucion = (archivo.split('.'))[0] #recupera el nombre del archivo y lo guarda en la variable global
     f.close()
     condiciones = []
-    for line in data.split('\n'):
+    for line in data.split('\n'): #obtiene los datos del archivo
         condiciones.append(line.split(","))
     return (condiciones)
 
@@ -288,9 +291,12 @@ def iteracionGranM(matriz):
 
 
 def main():
+    global nombreArchivoSolucion
+
     # LEER EL ARCHIVO
     condiciones = leerArhivo()
-
+    nombreArchivoSolucion += " Solution.txt"  # agregamos el sufijo al nombre del archivo
+    print(nombreArchivoSolucion)
     # PRIMERA LINEA DEL ARCIHVO. ESTA LA ESPECIFICACION DE LA TABLA
     definicion = condiciones[0]
 
@@ -319,7 +325,7 @@ def main():
     # DECISION DE METODO, EJECUCION Y SOLUCION
     texto = Metodo(metodo, matriz)
     if (solucionNoAcotada == False):
-        archivoSolucion = open("_solucion.txt", "w")
+        archivoSolucion = open(nombreArchivoSolucion, "w")
         archivoSolucion.write(texto)
 
 
