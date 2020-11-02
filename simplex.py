@@ -42,6 +42,7 @@ def Metodo(metodo, variables, restricciones, coeficientes, listaRestricciones, o
 
     elif metodo == 1:
         matriz = crearMatrizGranM(variables, restricciones, listaRestricciones, optimizacion, coeficientes)
+        llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optimizacion, restricciones)
         textoSolucion = "Solucion Metodo Gran M \n"
         conjuntoSolucion = iteracionSimplex(matriz)
     elif metodo == 2:
@@ -205,7 +206,7 @@ def crearMatrizGranM(variables, restricciones, listaRestricciones, optimizacion,
 
     columnasExtra += abs(restricciones - (contadorIguales + contadorMayorIgual))
     matriz = [[0 for i in range(columnas + columnasExtra)] for j in range(filas)]
-    llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optimizacion, restricciones)
+
 
     return matriz
 
