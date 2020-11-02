@@ -296,7 +296,7 @@ def main():
     # LEER EL ARCHIVO
     condiciones = leerArhivo()
     nombreArchivoSolucion += " Solution.txt"  # agregamos el sufijo al nombre del archivo
-    print(nombreArchivoSolucion)
+    
     # PRIMERA LINEA DEL ARCIHVO. ESTA LA ESPECIFICACION DE LA TABLA
     definicion = condiciones[0]
 
