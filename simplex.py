@@ -1,12 +1,10 @@
 import sys
-from fractions import Fraction
 
 # VARIABLE GLOBAL PARA ALMACENAR EL PROCEDIMIENTO DE LAS TABLAS INTERMEDIAS
 textoSolucion = ""
 matrizSolucion = [[]]
 variables = 0
 solucionNoAcotada = False
-
 nombreArchivoSolucion=""
 
 # FUNCION PARA LEER EL ARCHIVO .TXT
@@ -42,6 +40,8 @@ def Metodo(metodo, variables, restricciones, coeficientes, listaRestricciones, o
         conjuntoSolucion = iteracionSimplex(matriz)
 
     elif metodo == 1:
+        matriz = crearMatrizGranM(variables, restricciones, listaRestricciones)
+        imprimirMatriz(matriz)
         print("Gran M")
         textoSolucion = "Solucion Metodo Gran M \n"
         #conjuntoSolucion = iteracionGranM(matriz)
@@ -55,6 +55,51 @@ def Metodo(metodo, variables, restricciones, coeficientes, listaRestricciones, o
     #textoSolucion += verificarMatriz(matriz)
     return conjuntoSolucion
 
+
+def llenarMatrizGranM(matriz, variables):
+    matriz[0][0] = "VB"
+    matriz[0][len(matriz[0])-1] = "LD"
+
+    for x in range(1, len(variables)):
+        matriz[0][x] = "x" + str(x)
+
+
+
+
+def crearMatrizGranM(variables, restricciones, listaRestricciones):
+    columnas = 2 + variables
+    filas = 2 + restricciones
+
+    contadorIguales = 0
+    contadorMayorIgual = 0
+    listaPoscionesGranM = []
+    contador = 1 + variables
+
+    for restriccion in listaRestricciones:
+
+        if restriccion[len(restriccion) - 2] == "=":
+            contadorIguales += 1
+            listaPoscionesGranM.append(contador)
+
+        elif restriccion[len(restriccion) - 2] == ">=":
+            contadorMayorIgual += 1
+            contador += 1
+            listaPoscionesGranM.append(contador)
+
+        contador += 1
+
+        columnasExtra = 0
+        if contadorMayorIgual != 0:
+            columnasExtra += contadorMayorIgual * 2
+
+        if contadorIguales != 0:
+            columnasExtra += contadorIguales
+
+        columnasExtra += abs(restricciones - (contadorIguales + contadorMayorIgual))
+        matriz = [[0 for i in range(columnas + columnasExtra)] for j in range(filas)]
+        #llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizacion, listaPoscionesGranM)
+
+    return matriz
 
 # CREACION DE LA MATRIZ
 def crearMatriz(variables, restricciones):
@@ -91,11 +136,6 @@ def matrizToString(matriz):
     for row in matriz:
         stringMatriz = stringMatriz + (' \t'.join(map(str, row))) + "\n"
     return stringMatriz
-
-
-# PEQUENA FUNCION PARA MOSTRAR LOS DECIMALES EN FRACCIONES
-def fraccion(numeroParaFraccion):
-    return str(Fraction(numeroParaFraccion).limit_denominator())
 
 
 # FUNCION PARA LLENAR LA MATRIZ CON LAS RESTRICCIONES
@@ -290,11 +330,6 @@ def iteracionSimplex(matriz):
 
 
     return textoSolucion
-
-
-# RUTINA PARA LA SOLUCION MODO GRAM M
-def iteracionGranM(matriz):
-    print("En trabajo, disculpe las molestias")
 
 
 def main():
