@@ -1,0 +1,31 @@
+Solucion Metodo Gran M 
+La matriz inicial es 
+VB 	x1 	x2 	x3 	x4 	s1 	s2 	LD
+U 	-1.0 	-2.0 	3.0 	2.0 	-10.0 	-10.0 	0
+x3 	1.0 	2.0 	-3.0 	1.0 	1 	0 	4.0
+x4 	1.0 	2.0 	1.0 	2.0 	0 	1 	4.0
+
+La VB que sale es x3
+La VB entrante es: s1
+El numero Pivote es: 1.0
+Estado: 0
+VB 	x1 	x2 	x3 	x4 	s1 	s2 	LD
+U 	9.0 	18.0 	-27.0 	12.0 	0.0 	-10.0 	40.0
+s1 	1.0 	2.0 	-3.0 	1.0 	1.0 	0.0 	4.0
+x4 	1.0 	2.0 	1.0 	2.0 	0.0 	1.0 	4.0
+
+La VB que sale es x4
+La VB entrante es: x3
+El numero Pivote es: 1.0
+Estado: 1
+VB 	x1 	x2 	x3 	x4 	s1 	s2 	LD
+U 	36.0 	72.0 	0.0 	66.0 	0.0 	17.0 	148.0
+s1 	4.0 	8.0 	0.0 	7.0 	1.0 	3.0 	16.0
+x3 	1.0 	2.0 	1.0 	2.0 	0.0 	1.0 	4.0
+
+Matriz Solucion Final: 
+ VB 	x1 	x2 	x3 	x4 	s1 	s2 	LD
+U 	36.0 	72.0 	0.0 	66.0 	0.0 	17.0 	148.0
+s1 	4.0 	8.0 	0.0 	7.0 	1.0 	3.0 	16.0
+x3 	1.0 	2.0 	1.0 	2.0 	0.0 	1.0 	4.0
+

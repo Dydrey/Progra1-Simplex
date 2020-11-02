@@ -6,6 +6,7 @@ matrizSolucion = [[]]
 variables = 0
 solucionNoAcotada = False
 nombreArchivoSolucion=""
+M = 10
 
 # FUNCION PARA LEER EL ARCHIVO .TXT
 def leerArhivo():
@@ -40,11 +41,9 @@ def Metodo(metodo, variables, restricciones, coeficientes, listaRestricciones, o
         conjuntoSolucion = iteracionSimplex(matriz)
 
     elif metodo == 1:
-        matriz = crearMatrizGranM(variables, restricciones, listaRestricciones)
-        imprimirMatriz(matriz)
-        print("Gran M")
+        matriz = crearMatrizGranM(variables, restricciones, listaRestricciones, optimizacion, coeficientes)
         textoSolucion = "Solucion Metodo Gran M \n"
-        #conjuntoSolucion = iteracionGranM(matriz)
+        conjuntoSolucion = iteracionSimplex(matriz)
     elif metodo == 2:
         print("Dos Fases")
         textoSolucion = "Solucion Metodo Dos Fases \n"
@@ -56,50 +55,160 @@ def Metodo(metodo, variables, restricciones, coeficientes, listaRestricciones, o
     return conjuntoSolucion
 
 
-def llenarMatrizGranM(matriz, variables):
+# FUNCION PARA BUSCAR LA POSICION DE UN ELEMENTO EN UNA FILA
+def buscarElemEnFila(elemento, fila):
+    for x in range(len(fila)):
+        if elemento == fila[x]:
+            return x
+
+# FUNCION PARA LLENAR LA MATRIZ DE GRAN M
+def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optimizacion, restricciones):
+
+    # Variable global M, normalmente equivalente a un numero muy grande
+    global M
+
+    # Se meten las dos que siempre estan, VB y taLD
     matriz[0][0] = "VB"
     matriz[0][len(matriz[0])-1] = "LD"
 
-    for x in range(1, len(variables)):
+    # Contadores de las variables de holgura y artificiales
+    variableHolgura = 1
+    variableArtificial = 1
+
+    # Contador para la columna de todas las variables
+    contadorColumna = 1
+
+    # Se meten todas las variables basicas
+    for x in range(1, variables + 1):
         matriz[0][x] = "x" + str(x)
+        variableHolgura += 1
+        contadorColumna += 1
+
+    # Se meten las variables de holgura o artificiales
+    for restriccion in listaRestricciones:
+        desigualdad = restriccion[len(restriccion)-2]
+        # Si la desigualdad es mayor o igual
+        if desigualdad == ">=":
+            # Se agrega la variable artificial y holgura
+            matriz[0][contadorColumna] = "s" + str(variableArtificial)
+            matriz[0][contadorColumna + 1] = "x" + str(variableHolgura)
+            variableHolgura += 1
+            variableArtificial += 1
+            contadorColumna += 2
+        # Si la desigualdad es igual
+        elif desigualdad == "=":
+            # Se agrega variable artificial
+            matriz[0][contadorColumna] = "s" + str(variableArtificial)
+            variableArtificial += 1
+            contadorColumna += 1
+        # Si la desigualdad es menor o igual
+        elif desigualdad == "<=":
+            # Se agrega variable de holgura
+            matriz[0][contadorColumna] = "x" + str(variableHolgura)
+            variableHolgura += 1
+            contadorColumna += 1
+
+    # Se agrega la variable basica U
+    matriz[1][0] = "U"
+
+    # Para el contenido de los coeficientes de las variables de la funcion objetivo
+    for x in range(len(coeficientes)):
+        matriz[1][x + 1] = float(coeficientes[x]) * (-1)
+        matriz[0][x + 1] = "x" + str(x + 1)
+
+    # Para el contenido de las variables artificales de la funcion objetivo
+    if optimizacion == "min":
+        M = (M * (-1))
+
+    for x in range(1, len(matriz[0])-1):
+        posActual = x
+
+        if (matriz[0][posActual])[0] == "s":
+            matriz[1][posActual] = float(M)
+
+    # Para todas las restricciones~~~filas~~~
+    for x in range(len(listaRestricciones)):
+        # Se toma la restriccion actual
+        restriccion = listaRestricciones[x]
+
+        #~~~columnas~~~
+        for i in range(len(restriccion)):
+            # Si esta en la ultima posicion de la restriccion
+            if i == (len(restriccion)-1):
+                matriz[2 + x][len(matriz[0])-1] = float(restriccion[i])
+            # Si esta en la posicion de la desigualdad en la restriccion
+            elif i == (len(restriccion)-2):
+                pass
+            # Para todas las demas
+            else:
+                matriz[2 + x][1 + i] = float(restriccion[i])
+
+    # Para la matriz identidad de las variables no basicas
+    # x son las filas
+    # y son las columnas
+    y = 1 + variables
+    for x in range(restricciones):
+        restriccion = listaRestricciones[x]
+        desigualdad = restriccion[len(restriccion) - 2]
+        restriccion = listaRestricciones[x]
+        if desigualdad == ">=":
+            # Se agrega el 1 de la variable artificial y el -1 de la variable de holgura
+            matriz[2 + x][y] = 1
+            matriz[2 + x][y + 1] = -1
+            y += 2
+        # Si la desigualdad es igual
+        elif desigualdad == "=":
+            # Se agrega el 1 de la variable artificial
+            matriz[2 + x][y] = 1
+            y += 1
+        # Si la desigualdad es menor o igual
+        elif desigualdad == "<=":
+            # Se agrega el 1 de la variable de holgura
+            matriz[2 + x][y] = 1
+            y += 1
+        x += 1
+
+    # Para todas las restricciones
+    for x in range(len(listaRestricciones)):
+        # Se busca el numero mayor de las variables no basicas para tomar su variable como basica
+        maximo = max(matriz[x + 2][(1 + variables):][:-1])
+        col = buscarElemEnFila(maximo, matriz[x + 2][(1 + variables):][:-1])
+        matriz[2 + x][0] = matriz[0][col + 3]
 
 
-
-
-def crearMatrizGranM(variables, restricciones, listaRestricciones):
+# FUNCION PARA CREAR LA MATRIZ DE GRAN M
+def crearMatrizGranM(variables, restricciones, listaRestricciones, optimizacion, coeficientes):
     columnas = 2 + variables
     filas = 2 + restricciones
 
     contadorIguales = 0
     contadorMayorIgual = 0
-    listaPoscionesGranM = []
     contador = 1 + variables
 
     for restriccion in listaRestricciones:
 
         if restriccion[len(restriccion) - 2] == "=":
             contadorIguales += 1
-            listaPoscionesGranM.append(contador)
 
         elif restriccion[len(restriccion) - 2] == ">=":
             contadorMayorIgual += 1
             contador += 1
-            listaPoscionesGranM.append(contador)
 
         contador += 1
 
-        columnasExtra = 0
-        if contadorMayorIgual != 0:
-            columnasExtra += contadorMayorIgual * 2
+    columnasExtra = 0
+    if contadorMayorIgual != 0:
+        columnasExtra += contadorMayorIgual * 2
 
-        if contadorIguales != 0:
-            columnasExtra += contadorIguales
+    if contadorIguales != 0:
+        columnasExtra += contadorIguales
 
-        columnasExtra += abs(restricciones - (contadorIguales + contadorMayorIgual))
-        matriz = [[0 for i in range(columnas + columnasExtra)] for j in range(filas)]
-        #llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizacion, listaPoscionesGranM)
+    columnasExtra += abs(restricciones - (contadorIguales + contadorMayorIgual))
+    matriz = [[0 for i in range(columnas + columnasExtra)] for j in range(filas)]
+    llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optimizacion, restricciones)
 
     return matriz
+
 
 # CREACION DE LA MATRIZ
 def crearMatriz(variables, restricciones):
@@ -235,9 +344,9 @@ def esNoFactible(matriz):
             return True
     return False
 
-# Para el final del recorrido. Compone lo que sería las soluciones para escribirlas en el archivo de texto
+# Para el final del recorrido. Compone lo que seria las soluciones para escribirlas en el archivo de texto
 # Verifica la fila de variables con la columna 0 final, para obtener si hay soluciones para las variables basicas
-def crearBasicaFactible(matriz):
+#def crearBasicaFactible(matriz):
 
 
 # fPara solucion no acotada. Cuando en U hay un numero negativo (Se pueden hacer iteraciones) y todos los numeros debajo de este
