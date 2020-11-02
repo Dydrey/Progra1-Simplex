@@ -1,0 +1,35 @@
+Solucion Metodo Simplex 
+La matriz inicial es 
+VB 	x1 	x2 	x3 	x4 	x5 	LD
+U 	-3.0 	-5.0 	0 	0 	0 	0
+x3 	1.0 	0.0 	1 	0 	0 	4.0
+x4 	0.0 	2.0 	0 	1 	0 	12.0
+x5 	3.0 	2.0 	0 	0 	1 	18.0
+
+La VB que sale es x4
+La VB entrante es: x2
+El numero Pivote es: 2.0
+Estado: 0
+VB 	x1 	x2 	x3 	x4 	x5 	LD
+U 	-3.0 	0.0 	0.0 	2.5 	0.0 	30.0
+x3 	1.0 	0.0 	1.0 	0.0 	0.0 	4.0
+x2 	0.0 	1.0 	0.0 	0.5 	0.0 	6.0
+x5 	3.0 	0.0 	0.0 	-1.0 	1.0 	6.0
+
+La VB que sale es x5
+La VB entrante es: x1
+El numero Pivote es: 3.0
+Estado: 1
+VB 	x1 	x2 	x3 	x4 	x5 	LD
+U 	0.0 	0.0 	0.0 	1.5 	1.0 	36.0
+x3 	0.0 	0.0 	1.0 	0.333 	-0.333 	2.0
+x2 	0.0 	1.0 	0.0 	0.5 	0.0 	6.0
+x1 	1.0 	0.0 	0.0 	-0.3333 	0.3333 	2.0
+
+Matriz Solucion Final: 
+ VB 	x1 	x2 	x3 	x4 	x5 	LD
+U 	0.0 	0.0 	0.0 	1.5 	1.0 	36.0
+x3 	0.0 	0.0 	1.0 	0.333 	-0.333 	2.0
+x2 	0.0 	1.0 	0.0 	0.5 	0.0 	6.0
+x1 	1.0 	0.0 	0.0 	-0.3333 	0.3333 	2.0
+
