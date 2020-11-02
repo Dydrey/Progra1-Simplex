@@ -31,18 +31,20 @@ def leerArhivo():
 
 
 # LOGICA PARA DEFINIR PROCEDIMIENTO
-def Metodo(metodo, matriz):
+def Metodo(metodo, variables, restricciones, coeficientes, listaRestricciones, optimizacion):
     # VARIABLES DE CONFIGURACION
     conjuntoSolucion = []
     global textoSolucion
     if metodo == 0:
+        matriz = crearMatriz(variables, restricciones)  # SE CREA LA MATRIZ
+        llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizacion)  # SE LLENA LA MATRIZ CON LOS VALORES DEL ARCHIVO
         textoSolucion += "Solucion Metodo Simplex \n"
         conjuntoSolucion = iteracionSimplex(matriz)
 
     elif metodo == 1:
         print("Gran M")
         textoSolucion = "Solucion Metodo Gran M \n"
-        conjuntoSolucion = iteracionGranM(matriz)
+        #conjuntoSolucion = iteracionGranM(matriz)
     elif metodo == 2:
         print("Dos Fases")
         textoSolucion = "Solucion Metodo Dos Fases \n"
@@ -300,7 +302,7 @@ def main():
 
     # LEER EL ARCHIVO
     condiciones = leerArhivo()
-    nombreArchivoSolucion += " Solution.txt"  # agregamos el sufijo al nombre del archivo
+    nombreArchivoSolucion += "_Solution.txt"  # agregamos el sufijo al nombre del archivo
 
     # PRIMERA LINEA DEL ARCIHVO. ESTA LA ESPECIFICACION DE LA TABLA
     definicion = condiciones[0]
@@ -322,13 +324,8 @@ def main():
         listaRestricciones.append(condiciones[ind])
         ind += 1
 
-    matriz = crearMatriz(variables, restricciones)  # SE CREA LA MATRIZ
-    llenarMatriz(matriz, coeficientes, listaRestricciones, variables,
-                 optimizacion)  # SE LLENA LA MATRIZ CON LOS VALORES DEL ARCHIVO
-    # imprimirMatriz(matriz) #SE IMPRIME LA MATRIZ
-
     # DECISION DE METODO, EJECUCION Y SOLUCION
-    texto = Metodo(metodo, matriz)
+    texto = Metodo(metodo, variables, restricciones, coeficientes, listaRestricciones, optimizacion)
     if (solucionNoAcotada == False):
         archivoSolucion = open(nombreArchivoSolucion, "w")
         archivoSolucion.write(texto)
