@@ -72,25 +72,23 @@ def nuevaFuncionObjetivoM(matriz):
 
     global MFO
     matrizDuplicada = copy.deepcopy(matriz)
-    restriccionesOriginales = copy.deepcopy(matriz[2:])
-    fila1 = copy.deepcopy(matriz[0])
     filaObjetivoSumada = matrizDuplicada[1]
 
     for x in range(2, len(matriz)): # recorre todas las filas de la matriz
 
-        print("Recorriendo la fila " + str(x) + " que es")
-        print(matrizDuplicada[x])
-        if ((matriz[x][0])[0] == "s"): # verifica si hay una s en la restriccion
+        if (matriz[x][0])[0] == "s": # verifica si hay una s en la restriccion
 
             for y in range(1, len(matriz[x])): # recorro la fila
 
                 matrizDuplicada[x][y] = matrizDuplicada[x][y] * (-MFO)
                 filaObjetivoSumada[y] += matrizDuplicada[x][y] #suma los elementos de cada columna en la nueva funcion objetivo
-                print("Sumando" + str(filaObjetivoSumada[y]) + " con " + str(matrizDuplicada[x][y]))
 
-    restriccionesOriginales.insert(0, filaObjetivoSumada)
-    restriccionesOriginales.insert(0, fila1)
-    return restriccionesOriginales
+    print("La matriz normal es")
+    imprimirMatriz(matriz)
+    matriz[1] = filaObjetivoSumada
+    print("LA MATRIZ ES")
+    imprimirMatriz(matriz)
+    return matriz
 
 
 # FUNCION PARA LLENAR LA MATRIZ DE GRAN M
@@ -203,13 +201,16 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
         col = buscarElemEnFila(maximo, matriz[x + 2][(1 + variables):][:-1])
         matriz[2 + x][0] = matriz[0][col + 3]
 
+
     '''
     print("LA funcion normal es")
     imprimirMatriz(matriz)
-    nuevaFuncionObjetivoM(matriz)
     print("Funcion modificada es")
     imprimirMatriz(matriz)
     '''
+    nuevaFuncionObjetivoM(matriz)
+
+
 
 
 # FUNCION PARA CREAR LA MATRIZ DE GRAN M
