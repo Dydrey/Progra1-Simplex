@@ -1,0 +1,26 @@
+Solucion Metodo Simplex 
+La matriz inicial es 
+VB 	x1 	x2 	x3 	x4 	x5 	x6 	LD
+U 	-1.0 	-2.0 	-3.0 	0 	0 	0 	0
+x4 	1.0 	2.0 	3.0 	1 	0 	0 	10.0
+x5 	1.0 	1.0 	0.0 	0 	1 	0 	5.0
+x6 	1.0 	0.0 	0.0 	0 	0 	1 	1.0
+
+La VB que sale es x4
+La VB entrante es: x3
+El numero Pivote es: 3.0
+Estado: 0
+VB 	x1 	x2 	x3 	x4 	x5 	x6 	LD
+U 	-0.0 	0.0 	0.0 	1.0 	0.0 	0.0 	10.0
+x3 	0.3333 	0.6667 	1.0 	0.3333 	0.0 	0.0 	3.3333
+x5 	1.0 	1.0 	0.0 	0.0 	1.0 	0.0 	5.0
+x6 	1.0 	0.0 	0.0 	0.0 	0.0 	1.0 	1.0
+
+Matriz Solucion Final: 
+ VB 	x1 	x2 	x3 	x4 	x5 	x6 	LD
+U 	-0.0 	0.0 	0.0 	1.0 	0.0 	0.0 	10.0
+x3 	0.3333 	0.6667 	1.0 	0.3333 	0.0 	0.0 	3.3333
+x5 	1.0 	1.0 	0.0 	0.0 	1.0 	0.0 	5.0
+x6 	1.0 	0.0 	0.0 	0.0 	0.0 	1.0 	1.0
+
+La solucion es multiple
