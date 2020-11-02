@@ -187,7 +187,11 @@ def esMultiple(matriz):
 
 # Para solucion no factible. Si al llegar al optino existe una variable basica que es una variable artificial, el problema
 # no es factible >Se hace en la ultima<
-# def esNoFactible(matriz):
+def esNoFactible(matriz):
+    for i in range(0, len(matriz)):
+        if str(matriz[i][0]).find("S") != -1: #busca si contiene una s en la primera columna
+            return True
+    return False
 
 
 # fPara solucion no acotada. Cuando en U hay un numero negativo (Se pueden hacer iteraciones) y todos los numeros debajo de este
