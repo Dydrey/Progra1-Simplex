@@ -1,4 +1,5 @@
 import sys
+import copy
 
 # VARIABLE GLOBAL PARA ALMACENAR EL PROCEDIMIENTO DE LAS TABLAS INTERMEDIAS
 textoSolucion = ""
@@ -6,7 +7,8 @@ matrizSolucion = [[]]
 variables = 0
 solucionNoAcotada = False
 nombreArchivoSolucion=""
-M = 10
+M = 100
+MFO = 100
 
 # FUNCION PARA LEER EL ARCHIVO .TXT
 def leerArhivo():
@@ -14,7 +16,7 @@ def leerArhivo():
     if (sys.argv[1] != "-h"):
         archivo = sys.argv[1]
     else:
-        print("Parametros: -h --help 'Muestra formato de archivo para la ejecucion \n'")
+        print("Parametros: -h --help 'Muestra formato de archivo para la ejecucion \n")
         print(
             "El formato del archivo debe ser: \nmetodo,optimizacion,numeros de variables de decision, numero de restricciones\ncoeficientes de la funcion objetivo\ncoeficientes de las restricciones y signo de restriccion")
         print("Ejemplo: \n0,min,3,3\n1,-2,1\n1,1,1<=,12\n2,1,1,<=,6\n-1,3,<=,9\n\n")
@@ -62,6 +64,35 @@ def buscarElemEnFila(elemento, fila):
         if elemento == fila[x]:
             return x
 
+
+# Identifico todas las restricciones que tienen s de variable basica. A estas filas se multiplica cada valor de su fila
+# por -M incluido el LD. Estas filas modificadas se le suman a la funcion objetivo. Finalmente se restaura la funcion
+# objetivo en la matriz.
+def nuevaFuncionObjetivoM(matriz):
+
+    global MFO
+    matrizDuplicada = copy.deepcopy(matriz)
+    restriccionesOriginales = copy.deepcopy(matriz[2:])
+    fila1 = copy.deepcopy(matriz[0])
+    filaObjetivoSumada = matrizDuplicada[1]
+
+    for x in range(2, len(matriz)): # recorre todas las filas de la matriz
+
+        print("Recorriendo la fila " + str(x) + " que es")
+        print(matrizDuplicada[x])
+        if ((matriz[x][0])[0] == "s"): # verifica si hay una s en la restriccion
+
+            for y in range(1, len(matriz[x])): # recorro la fila
+
+                matrizDuplicada[x][y] = matrizDuplicada[x][y] * (-MFO)
+                filaObjetivoSumada[y] += matrizDuplicada[x][y] #suma los elementos de cada columna en la nueva funcion objetivo
+                print("Sumando" + str(filaObjetivoSumada[y]) + " con " + str(matrizDuplicada[x][y]))
+
+    restriccionesOriginales.insert(0, filaObjetivoSumada)
+    restriccionesOriginales.insert(0, fila1)
+    return restriccionesOriginales
+
+
 # FUNCION PARA LLENAR LA MATRIZ DE GRAN M
 def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optimizacion, restricciones):
 
@@ -91,8 +122,8 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
         # Si la desigualdad es mayor o igual
         if desigualdad == ">=":
             # Se agrega la variable artificial y holgura
-            matriz[0][contadorColumna] = "s" + str(variableArtificial)
-            matriz[0][contadorColumna + 1] = "x" + str(variableHolgura)
+            matriz[0][contadorColumna] = "x" + str(variableHolgura)
+            matriz[0][contadorColumna + 1] = "s" + str(variableArtificial)
             variableHolgura += 1
             variableArtificial += 1
             contadorColumna += 2
@@ -115,17 +146,14 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
     # Para el contenido de los coeficientes de las variables de la funcion objetivo
     for x in range(len(coeficientes)):
         matriz[1][x + 1] = float(coeficientes[x]) * (-1)
-        matriz[0][x + 1] = "x" + str(x + 1)
 
     # Para el contenido de las variables artificales de la funcion objetivo
-    if optimizacion == "min":
+    if optimizacion == "max":
         M = (M * (-1))
 
     for x in range(1, len(matriz[0])-1):
-        posActual = x
-
-        if (matriz[0][posActual])[0] == "s":
-            matriz[1][posActual] = float(M)
+        if (matriz[0][x])[0] == "s":
+            matriz[1][x] = float(M)
 
     # Para todas las restricciones~~~filas~~~
     for x in range(len(listaRestricciones)):
@@ -151,11 +179,10 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
     for x in range(restricciones):
         restriccion = listaRestricciones[x]
         desigualdad = restriccion[len(restriccion) - 2]
-        restriccion = listaRestricciones[x]
         if desigualdad == ">=":
             # Se agrega el 1 de la variable artificial y el -1 de la variable de holgura
-            matriz[2 + x][y] = 1
-            matriz[2 + x][y + 1] = -1
+            matriz[2 + x][y] = -1
+            matriz[2 + x][y + 1] = 1
             y += 2
         # Si la desigualdad es igual
         elif desigualdad == "=":
@@ -175,6 +202,14 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
         maximo = max(matriz[x + 2][(1 + variables):][:-1])
         col = buscarElemEnFila(maximo, matriz[x + 2][(1 + variables):][:-1])
         matriz[2 + x][0] = matriz[0][col + 3]
+
+    '''
+    print("LA funcion normal es")
+    imprimirMatriz(matriz)
+    nuevaFuncionObjetivoM(matriz)
+    print("Funcion modificada es")
+    imprimirMatriz(matriz)
+    '''
 
 
 # FUNCION PARA CREAR LA MATRIZ DE GRAN M
