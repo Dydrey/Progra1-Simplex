@@ -7,8 +7,8 @@ matrizSolucion = [[]]
 variables = 0
 solucionNoAcotada = False
 nombreArchivoSolucion=""
-M = 100
-MFO = 100
+M = 1000
+MFO = 1000
 
 # FUNCION PARA LEER EL ARCHIVO .TXT
 def leerArhivo():
@@ -212,7 +212,6 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
 
 
 
-
 # FUNCION PARA CREAR LA MATRIZ DE GRAN M
 def crearMatrizGranM(variables, restricciones, listaRestricciones, optimizacion, coeficientes):
     columnas = 2 + variables
@@ -317,7 +316,7 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizaci
 # FUNCION PARA BUSCAR LA COLUMNA CON EL NUMERO MENOR EN LA FUNCION OBJETIVO
 def buscaColMenor(matriz):
     pos = 0
-    menor = 99999
+    menor = 999999999
     for x in range(1, len(matriz[0])):
         elemActual = matriz[1][x]
         if elemActual < menor:
@@ -329,7 +328,7 @@ def buscaColMenor(matriz):
 # FUNCION PARA BUSCAR LA FILA QUE DIVIDA AL LADO DERECHO CON EL MENOR RESULTADO
 def buscarFilMenor(matriz, colMenor):
     i = 2
-    filMenor = 99999
+    filMenor = 999999999
     resultado = 0
     while i < len(matriz):
         if (matriz[i][colMenor] != 0) and (matriz[i][len(matriz[i]) - 1] != 0):
