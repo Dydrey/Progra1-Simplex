@@ -193,6 +193,10 @@ def esNoFactible(matriz):
             return True
     return False
 
+# Para el final del recorrido. Compone lo que sería las soluciones para escribirlas en el archivo de texto
+# Verifica la fila de variables con la columna 0 final, para obtener si hay soluciones para las variables basicas
+def crearBasicaFactible(matriz):
+
 
 # fPara solucion no acotada. Cuando en U hay un numero negativo (Se pueden hacer iteraciones) y todos los numeros debajo de este
 # son negativos o cero entonces la solucion no es acotada >Se hace en cualquier iteracion<
