@@ -164,7 +164,7 @@ def esVB(matriz, variable):
     return False
 
 # Para las soluciones degeneradas. Si en cualqueir iteracion hay una variable basica con valor o igual a cero en el lado
-#derecho la solucion es degenerada >Para todas las iteraciones<
+# derecho la solucion es degenerada >Para todas las iteraciones<
 def esDegenerada(matriz, variables):
     for i in range(2, len(matriz)):
         if (matriz[i][len(matriz[0])-1] == 0):
@@ -172,7 +172,8 @@ def esDegenerada(matriz, variables):
     return False
 
 
-#LISTA
+# Para las soluciones multiples. Si en la ultima iteracion hay una variable basica que el resultado en su
+# lado derecho es cero, la solucion muestra multiples soluciones {se hace en la ultima iteracion}
 def esMultiple(matriz):
     for i in range(1, len(matriz[0])):
         #print("Existe " + matriz[0][i] + "?")
@@ -296,7 +297,7 @@ def main():
     # LEER EL ARCHIVO
     condiciones = leerArhivo()
     nombreArchivoSolucion += " Solution.txt"  # agregamos el sufijo al nombre del archivo
-    
+
     # PRIMERA LINEA DEL ARCIHVO. ESTA LA ESPECIFICACION DE LA TABLA
     definicion = condiciones[0]
 
