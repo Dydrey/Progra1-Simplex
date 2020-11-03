@@ -201,11 +201,11 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
         matriz[2 + x][0] = matriz[0][col + 3]
 
 
-    print("LA funcion normal es")
+    #print("LA funcion normal es")
     imprimirMatriz(matriz)
 
     matriz = nuevaFuncionObjetivoM(matriz)
-    print("Funcion modificada es")
+    #print("Funcion modificada es")
     imprimirMatriz(matriz)
     return matriz
 
@@ -425,7 +425,7 @@ def iteracionSimplex(matriz):
 
     print("La matriz inicial es")
     imprimirMatriz(matriz)
-    print("")
+    #print("")
 
     #GUARDAMOS LA MATRIZ INICIAL EN EL STRING SOLUCION
     textoSolucion += "La matriz inicial es \n"+matrizToString(matriz)+"\n"
@@ -470,12 +470,12 @@ def iteracionSimplex(matriz):
         textoSolucion += matrizToString(matriz) + "\n"
         matrizSolucion = matriz
 
-        print("La matriz en la iteracion " + str(iteracion) + " es")
-        imprimirMatriz(matriz)
-        print("")
+        #print("La matriz en la iteracion " + str(iteracion) + " es")
+        #imprimirMatriz(matriz)
+        #print("")
         if (esDegenerada(matriz, variables)):
             textoSolucion += "La iteracion "+str(iteracion)+" muestra una solucion Degenerada\n"
-            print("Es degenerada")
+            #print("Es degenerada")
 
 
         iteracion += 1
@@ -529,7 +529,7 @@ def main():
         archivoSolucion.write(texto)
 
 
-        print("Matriz Solucion Final: ")
+        print("\nMatriz Solucion Final: ")
         imprimirMatriz(matrizSolucion)
         archivoSolucion.write("Matriz Solucion Final: \n "+matrizToString(matrizSolucion)+"\n")
 
