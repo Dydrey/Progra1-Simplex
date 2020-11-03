@@ -50,6 +50,8 @@ def Metodo(metodo, variables, restricciones, coeficientes, listaRestricciones, o
     elif metodo == 2:
         print("Dos Fases")
         textoSolucion = "Solucion Metodo Dos Fases \n"
+        print("Pero no hubo chance =(")
+        sys.exit(-7)
     # llamada a funcion de Dos Fases
     else:
         return ("Error de metodo")
@@ -202,7 +204,7 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
 
 
     #print("LA funcion normal es")
-    imprimirMatriz(matriz)
+    #imprimirMatriz(matriz)
 
     matriz = nuevaFuncionObjetivoM(matriz)
     #print("Funcion modificada es")
@@ -331,7 +333,7 @@ def buscarFilMenor(matriz, colMenor):
     resultado = 0
     while i < len(matriz):
         if (matriz[i][colMenor] != 0) and (matriz[i][len(matriz[i]) - 1] != 0):
-            valorLD = round(matriz[i][len(matriz[i]) - 1] / (matriz[i][colMenor]), 3)
+            valorLD = round(matriz[i][len(matriz[i]) - 1] / abs(matriz[i][colMenor]), 3)
             if ((valorLD < filMenor) and (valorLD > 0)):
                 filMenor = valorLD
                 resultado = i
@@ -540,11 +542,11 @@ def main():
 
 
 
-    BF = crearBasicaFactible(matrizSolucion)
-    print(BF)
-    texto += BF
-    archivoSolucion.write(texto)
-    archivoSolucion.close()
+        BF = crearBasicaFactible(matrizSolucion)
+        print(BF)
+        texto += BF
+        archivoSolucion.write(texto)
+        archivoSolucion.close()
 
 main()
 
