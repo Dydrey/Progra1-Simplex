@@ -7,8 +7,9 @@ matrizSolucion = [[]]
 variables = 0
 solucionNoAcotada = False
 nombreArchivoSolucion=""
-M = 100
-MFO = 100
+M = 1000
+MFO = 1000
+M = 10
 
 # FUNCION PARA LEER EL ARCHIVO .TXT
 def leerArhivo():
@@ -16,7 +17,7 @@ def leerArhivo():
     if (sys.argv[1] != "-h"):
         archivo = sys.argv[1]
     else:
-        print("Parametros: -h --help 'Muestra formato de archivo para la ejecucion \n")
+        print("Parametros: -h --help 'Muestra formato de archivo para la ejecucion \n'")
         print(
             "El formato del archivo debe ser: \nmetodo,optimizacion,numeros de variables de decision, numero de restricciones\ncoeficientes de la funcion objetivo\ncoeficientes de las restricciones y signo de restriccion")
         print("Ejemplo: \n0,min,3,3\n1,-2,1\n1,1,1<=,12\n2,1,1,<=,6\n-1,3,<=,9\n\n")
@@ -91,6 +92,7 @@ def nuevaFuncionObjetivoM(matriz):
     return matriz
 
 
+# Se crea la funcion para modificar la funcion objetivo pero se mantiene documentada donde se usa porque aun no funciona correctamente
 # FUNCION PARA LLENAR LA MATRIZ DE GRAN M
 def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optimizacion, restricciones):
 
@@ -120,8 +122,8 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
         # Si la desigualdad es mayor o igual
         if desigualdad == ">=":
             # Se agrega la variable artificial y holgura
-            matriz[0][contadorColumna] = "x" + str(variableHolgura)
-            matriz[0][contadorColumna + 1] = "s" + str(variableArtificial)
+            matriz[0][contadorColumna] = "s" + str(variableArtificial)
+            matriz[0][contadorColumna + 1] = "x" + str(variableHolgura)
             variableHolgura += 1
             variableArtificial += 1
             contadorColumna += 2
@@ -144,14 +146,17 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
     # Para el contenido de los coeficientes de las variables de la funcion objetivo
     for x in range(len(coeficientes)):
         matriz[1][x + 1] = float(coeficientes[x]) * (-1)
+        matriz[0][x + 1] = "x" + str(x + 1)
 
     # Para el contenido de las variables artificales de la funcion objetivo
-    if optimizacion == "max":
+    if optimizacion == "min":
         M = (M * (-1))
 
     for x in range(1, len(matriz[0])-1):
-        if (matriz[0][x])[0] == "s":
-            matriz[1][x] = float(M)
+        posActual = x
+
+        if (matriz[0][posActual])[0] == "s":
+            matriz[1][posActual] = float(M)
 
     # Para todas las restricciones~~~filas~~~
     for x in range(len(listaRestricciones)):
@@ -177,10 +182,11 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
     for x in range(restricciones):
         restriccion = listaRestricciones[x]
         desigualdad = restriccion[len(restriccion) - 2]
+        restriccion = listaRestricciones[x]
         if desigualdad == ">=":
             # Se agrega el 1 de la variable artificial y el -1 de la variable de holgura
-            matriz[2 + x][y] = -1
-            matriz[2 + x][y + 1] = 1
+            matriz[2 + x][y] = 1
+            matriz[2 + x][y + 1] = -1
             y += 2
         # Si la desigualdad es igual
         elif desigualdad == "=":
@@ -211,7 +217,7 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
     nuevaFuncionObjetivoM(matriz)
 
 
-
+# Se crea la funcion para modificar la funcion objetivo pero se mantiene documentada donde se usa porque aun no funciona correctamente
 
 # FUNCION PARA CREAR LA MATRIZ DE GRAN M
 def crearMatrizGranM(variables, restricciones, listaRestricciones, optimizacion, coeficientes):
@@ -317,7 +323,7 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizaci
 # FUNCION PARA BUSCAR LA COLUMNA CON EL NUMERO MENOR EN LA FUNCION OBJETIVO
 def buscaColMenor(matriz):
     pos = 0
-    menor = 99999
+    menor = 999999999
     for x in range(1, len(matriz[0])):
         elemActual = matriz[1][x]
         if elemActual < menor:
@@ -329,7 +335,7 @@ def buscaColMenor(matriz):
 # FUNCION PARA BUSCAR LA FILA QUE DIVIDA AL LADO DERECHO CON EL MENOR RESULTADO
 def buscarFilMenor(matriz, colMenor):
     i = 2
-    filMenor = 99999
+    filMenor = 999999999
     resultado = 0
     while i < len(matriz):
         #print(str(matriz[i][colMenor]));
