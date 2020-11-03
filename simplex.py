@@ -202,12 +202,12 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
         matriz[2 + x][0] = matriz[0][col + 3]
 
 
-    '''
+
     print("LA funcion normal es")
     imprimirMatriz(matriz)
     print("Funcion modificada es")
     imprimirMatriz(matriz)
-    '''
+
     nuevaFuncionObjetivoM(matriz)
 
 
@@ -332,9 +332,12 @@ def buscarFilMenor(matriz, colMenor):
     filMenor = 99999
     resultado = 0
     while i < len(matriz):
+        #print(str(matriz[i][colMenor]));
+        #print(str((matriz[i][len(matriz[i]) - 1])))
         if (matriz[i][colMenor] != 0) and (matriz[i][len(matriz[i]) - 1] != 0):
             valorLD = (matriz[i][len(matriz[i]) - 1] / matriz[i][colMenor])
-            if ((valorLD < filMenor) and (valorLD > 0)):
+           #print("valor LD "+str(valorLD) + " en "+str(matriz[i][len(matriz[i]) - 1])+ "con"+ str(matriz[i][colMenor]))
+            if ((valorLD < filMenor) and(valorLD > 0)):
                 filMenor = valorLD
                 resultado = i
         i += 1
@@ -383,8 +386,25 @@ def esNoFactible(matriz):
 
 # Para el final del recorrido. Compone lo que seria las soluciones para escribirlas en el archivo de texto
 # Verifica la fila de variables con la columna 0 final, para obtener si hay soluciones para las variables basicas
-#def crearBasicaFactible(matriz):
+def crearBasicaFactible(matriz, variables):
 
+    solucionBasica = "Z = "+str(matriz[1][len(matriz[1])-1]) +" con, BF = ("
+
+    #recorre las columnas
+    for j in range(1, len(matriz[0])-1):
+
+        #recorre las filas
+        for i in range(2, len(matriz)):
+
+            if (matriz[0][j] == matriz[i][0]):
+
+
+                    solucionBasica += " "+str(matriz[i][len(matriz[1])-1])
+            #else:
+            #solucionBasica += " O "
+
+    solucionBasica += ")"
+    return solucionBasica
 
 # fPara solucion no acotada. Cuando en U hay un numero negativo (Se pueden hacer iteraciones) y todos los numeros debajo de este
 # son negativos o cero entonces la solucion no es acotada >Se hace en cualquier iteracion<
@@ -511,8 +531,10 @@ def main():
 
     # DECISION DE METODO, EJECUCION Y SOLUCION
     texto = Metodo(metodo, variables, restricciones, coeficientes, listaRestricciones, optimizacion)
+    archivoSolucion = open(nombreArchivoSolucion, "w")
     if (solucionNoAcotada == False):
-        archivoSolucion = open(nombreArchivoSolucion, "w")
+
+        #escribe el contenido de las iteraciones y demas
         archivoSolucion.write(texto)
 
 
@@ -525,11 +547,13 @@ def main():
             archivoSolucion.write("La solucion es multiple")
             print("La solucion es multiple")
 
-        archivoSolucion.close()
-    '''
-	if (esNoFactible(matriz)):
-		print("La solucion es no factible")
-	'''
+
+
+    BF = crearBasicaFactible(matrizSolucion, variables)
+    print(BF)
+    texto += BF
+    archivoSolucion.write(texto)
+    archivoSolucion.close()
 
 
 main()
