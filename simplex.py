@@ -7,9 +7,8 @@ matrizSolucion = [[]]
 variables = 0
 solucionNoAcotada = False
 nombreArchivoSolucion=""
-M = 1000
-MFO = 1000
-M = 10
+M = 100
+MFO = 100
 
 # FUNCION PARA LEER EL ARCHIVO .TXT
 def leerArhivo():
@@ -17,7 +16,7 @@ def leerArhivo():
     if (sys.argv[1] != "-h"):
         archivo = sys.argv[1]
     else:
-        print("Parametros: -h --help 'Muestra formato de archivo para la ejecucion \n'")
+        print("Parametros: -h --help 'Muestra formato de archivo para la ejecucion \n")
         print(
             "El formato del archivo debe ser: \nmetodo,optimizacion,numeros de variables de decision, numero de restricciones\ncoeficientes de la funcion objetivo\ncoeficientes de las restricciones y signo de restriccion")
         print("Ejemplo: \n0,min,3,3\n1,-2,1\n1,1,1<=,12\n2,1,1,<=,6\n-1,3,<=,9\n\n")
@@ -73,26 +72,24 @@ def nuevaFuncionObjetivoM(matriz):
 
     global MFO
     matrizDuplicada = copy.deepcopy(matriz)
+    restriccionesOriginales = copy.deepcopy(matriz[2:])
+    fila1 = copy.deepcopy(matriz[0])
     filaObjetivoSumada = matrizDuplicada[1]
 
     for x in range(2, len(matriz)): # recorre todas las filas de la matriz
 
-        if (matriz[x][0])[0] == "s": # verifica si hay una s en la restriccion
+        if ((matriz[x][0])[0] == "s"): # verifica si hay una s en la restriccion
 
             for y in range(1, len(matriz[x])): # recorro la fila
 
                 matrizDuplicada[x][y] = matrizDuplicada[x][y] * (-MFO)
                 filaObjetivoSumada[y] += matrizDuplicada[x][y] #suma los elementos de cada columna en la nueva funcion objetivo
 
-    print("La matriz normal es")
-    imprimirMatriz(matriz)
-    matriz[1] = filaObjetivoSumada
-    print("LA MATRIZ ES")
-    imprimirMatriz(matriz)
-    return matriz
+    restriccionesOriginales.insert(0, filaObjetivoSumada)
+    restriccionesOriginales.insert(0, fila1)
+    return restriccionesOriginales
 
 
-# Se crea la funcion para modificar la funcion objetivo pero se mantiene documentada donde se usa porque aun no funciona correctamente
 # FUNCION PARA LLENAR LA MATRIZ DE GRAN M
 def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optimizacion, restricciones):
 
@@ -122,8 +119,8 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
         # Si la desigualdad es mayor o igual
         if desigualdad == ">=":
             # Se agrega la variable artificial y holgura
-            matriz[0][contadorColumna] = "s" + str(variableArtificial)
-            matriz[0][contadorColumna + 1] = "x" + str(variableHolgura)
+            matriz[0][contadorColumna] = "x" + str(variableHolgura)
+            matriz[0][contadorColumna + 1] = "s" + str(variableArtificial)
             variableHolgura += 1
             variableArtificial += 1
             contadorColumna += 2
@@ -146,17 +143,14 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
     # Para el contenido de los coeficientes de las variables de la funcion objetivo
     for x in range(len(coeficientes)):
         matriz[1][x + 1] = float(coeficientes[x]) * (-1)
-        matriz[0][x + 1] = "x" + str(x + 1)
 
     # Para el contenido de las variables artificales de la funcion objetivo
-    if optimizacion == "min":
+    if optimizacion == "max":
         M = (M * (-1))
 
     for x in range(1, len(matriz[0])-1):
-        posActual = x
-
-        if (matriz[0][posActual])[0] == "s":
-            matriz[1][posActual] = float(M)
+        if (matriz[0][x])[0] == "s":
+            matriz[1][x] = float(M)
 
     # Para todas las restricciones~~~filas~~~
     for x in range(len(listaRestricciones)):
@@ -182,11 +176,10 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
     for x in range(restricciones):
         restriccion = listaRestricciones[x]
         desigualdad = restriccion[len(restriccion) - 2]
-        restriccion = listaRestricciones[x]
         if desigualdad == ">=":
             # Se agrega el 1 de la variable artificial y el -1 de la variable de holgura
-            matriz[2 + x][y] = 1
-            matriz[2 + x][y + 1] = -1
+            matriz[2 + x][y] = -1
+            matriz[2 + x][y + 1] = 1
             y += 2
         # Si la desigualdad es igual
         elif desigualdad == "=":
@@ -207,17 +200,14 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
         col = buscarElemEnFila(maximo, matriz[x + 2][(1 + variables):][:-1])
         matriz[2 + x][0] = matriz[0][col + 3]
 
-
     '''
     print("LA funcion normal es")
     imprimirMatriz(matriz)
+    nuevaFuncionObjetivoM(matriz)
     print("Funcion modificada es")
     imprimirMatriz(matriz)
     '''
-    nuevaFuncionObjetivoM(matriz)
 
-
-# Se crea la funcion para modificar la funcion objetivo pero se mantiene documentada donde se usa porque aun no funciona correctamente
 
 # FUNCION PARA CREAR LA MATRIZ DE GRAN M
 def crearMatrizGranM(variables, restricciones, listaRestricciones, optimizacion, coeficientes):
@@ -323,7 +313,7 @@ def llenarMatriz(matriz, coeficientes, listaRestricciones, variables, optimizaci
 # FUNCION PARA BUSCAR LA COLUMNA CON EL NUMERO MENOR EN LA FUNCION OBJETIVO
 def buscaColMenor(matriz):
     pos = 0
-    menor = 999999999
+    menor = 99999
     for x in range(1, len(matriz[0])):
         elemActual = matriz[1][x]
         if elemActual < menor:
@@ -335,7 +325,7 @@ def buscaColMenor(matriz):
 # FUNCION PARA BUSCAR LA FILA QUE DIVIDA AL LADO DERECHO CON EL MENOR RESULTADO
 def buscarFilMenor(matriz, colMenor):
     i = 2
-    filMenor = 999999999
+    filMenor = 99999
     resultado = 0
     while i < len(matriz):
         if (matriz[i][colMenor] != 0) and (matriz[i][len(matriz[i]) - 1] != 0):
@@ -350,11 +340,8 @@ def buscarFilMenor(matriz, colMenor):
 # FUNCION PARA SABER SI UNA VARIABLE ES BASICA
 def esVB(matriz, variable):
     for i in range(2, len(matriz)):
-        #print("Comparando " + variable + " con " + str(matriz[i][0]))
         if matriz[i][0] == variable:
-            #print("Existe " + variable)
             return True
-   # print("No existe " + variable)
     return False
 
 # Para las soluciones degeneradas. Si en cualqueir iteracion hay una variable basica con valor o igual a cero en el lado
@@ -370,11 +357,9 @@ def esDegenerada(matriz, variables):
 # lado derecho es cero, la solucion muestra multiples soluciones {se hace en la ultima iteracion}
 def esMultiple(matriz):
     for i in range(1, len(matriz[0])):
-        #print("Existe " + matriz[0][i] + "?")
         existe = esVB(matriz, matriz[0][i])
         if not (existe):
             if (matriz[1][i]) == 0:
-                #print("El valor en " + matriz[0][i] + " es cero")
                 return True
     return False
 
@@ -390,6 +375,25 @@ def esNoFactible(matriz):
 # Para el final del recorrido. Compone lo que seria las soluciones para escribirlas en el archivo de texto
 # Verifica la fila de variables con la columna 0 final, para obtener si hay soluciones para las variables basicas
 #def crearBasicaFactible(matriz):
+
+# Para el final del recorrido. Compone lo que seria las soluciones para escribirlas en el archivo de texto
+# Verifica la fila de variables con la columna 0 final, para obtener si hay soluciones para las variables basicas
+def crearBasicaFactible(matriz):
+
+    solucionBasica = "Respuesta Final: Z = "+str(matriz[1][len(matriz[1])-1]) +" con, BF = ("
+    arregloSoluciones = [0]*(len(matriz[0])-2)
+
+    #recorre las columnas
+    for j in range(1, len(matriz[0])-1):
+
+        #recorre las filas
+        for i in range(2, len(matriz)):
+
+            if (matriz[0][j] == matriz[i][0]):
+                    arregloSoluciones[j-1] = matriz[i][len(matriz[1])-1]
+
+    solucionBasica += ', '.join([str(elem) for elem in arregloSoluciones])+ ")"
+    return solucionBasica
 
 
 # fPara solucion no acotada. Cuando en U hay un numero negativo (Se pueden hacer iteraciones) y todos los numeros debajo de este
@@ -437,7 +441,6 @@ def iteracionSimplex(matriz):
         # GUARDAMOS EL VALOR DEL PIVOTE PARA LAS ITERACIONES
         numeroPivote = round(float(matriz[filMenor][colMenor]), 3)
         textoSolucion += "El numero Pivote es: " + str(numeroPivote) + "\n"
-        # print(textoSolucion)
 
 
         # CAMBIAMOS LA VB
@@ -517,8 +520,10 @@ def main():
 
     # DECISION DE METODO, EJECUCION Y SOLUCION
     texto = Metodo(metodo, variables, restricciones, coeficientes, listaRestricciones, optimizacion)
+    archivoSolucion = open(nombreArchivoSolucion, "w")
     if (solucionNoAcotada == False):
-        archivoSolucion = open(nombreArchivoSolucion, "w")
+
+        #escribe el contenido de las iteraciones y demas
         archivoSolucion.write(texto)
 
 
@@ -531,12 +536,13 @@ def main():
             archivoSolucion.write("La solucion es multiple")
             print("La solucion es multiple")
 
-        archivoSolucion.close()
-    '''
-	if (esNoFactible(matriz)):
-		print("La solucion es no factible")
-	'''
 
+
+    BF = crearBasicaFactible(matrizSolucion)
+    print(BF)
+    texto += BF
+    archivoSolucion.write(texto)
+    archivoSolucion.close()
 
 main()
 

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 Solucion Metodo Gran M 
 La matriz inicial es 
 VB 	x1 	x2 	x3 	s1 	x4 	s2 	LD
@@ -25,5 +24,3 @@ x1 	1.0 	0.5 	0.0 	0.0 	0.5 	0.0 	2.0
 s2 	0.0 	0.5 	0.0 	0.0 	-0.5 	1.0 	1.0
 
 La solucion es multiple
-=======
->>>>>>> parent of 71b2a32... Se crea la funcion para modificar la funcion objetivo pero se mantiene documentada donde se usa porque aun no funciona correctamente
