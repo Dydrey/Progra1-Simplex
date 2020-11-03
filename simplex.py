@@ -44,12 +44,14 @@ def Metodo(metodo, variables, restricciones, coeficientes, listaRestricciones, o
 
     elif metodo == 1:
         matriz = crearMatrizGranM(variables, restricciones, listaRestricciones, optimizacion, coeficientes)
-        llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optimizacion, restricciones)
+        matriz = llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optimizacion, restricciones)
         textoSolucion = "Solucion Metodo Gran M \n"
         conjuntoSolucion = iteracionSimplex(matriz)
     elif metodo == 2:
         print("Dos Fases")
         textoSolucion = "Solucion Metodo Dos Fases \n"
+        print("Pero no hubo chance =(")
+        sys.exit(-7)
     # llamada a funcion de Dos Fases
     else:
         return ("Error de metodo")
@@ -74,7 +76,7 @@ def nuevaFuncionObjetivoM(matriz):
     matrizDuplicada = copy.deepcopy(matriz)
     restriccionesOriginales = copy.deepcopy(matriz[2:])
     fila1 = copy.deepcopy(matriz[0])
-    filaObjetivoSumada = matrizDuplicada[1]
+    filaObjetivoSumada = copy.deepcopy(matrizDuplicada[1])
 
     for x in range(2, len(matriz)): # recorre todas las filas de la matriz
 
@@ -200,13 +202,15 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
         col = buscarElemEnFila(maximo, matriz[x + 2][(1 + variables):][:-1])
         matriz[2 + x][0] = matriz[0][col + 3]
 
-    '''
-    print("LA funcion normal es")
+
+    #print("LA funcion normal es")
+    #imprimirMatriz(matriz)
+
+    matriz = nuevaFuncionObjetivoM(matriz)
+    #print("Funcion modificada es")
     imprimirMatriz(matriz)
-    nuevaFuncionObjetivoM(matriz)
-    print("Funcion modificada es")
-    imprimirMatriz(matriz)
-    '''
+    return matriz
+
 
 
 # FUNCION PARA CREAR LA MATRIZ DE GRAN M
@@ -329,7 +333,7 @@ def buscarFilMenor(matriz, colMenor):
     resultado = 0
     while i < len(matriz):
         if (matriz[i][colMenor] != 0) and (matriz[i][len(matriz[i]) - 1] != 0):
-            valorLD = (matriz[i][len(matriz[i]) - 1] / matriz[i][colMenor])
+            valorLD = round(matriz[i][len(matriz[i]) - 1] / abs(matriz[i][colMenor]), 3)
             if ((valorLD < filMenor) and (valorLD > 0)):
                 filMenor = valorLD
                 resultado = i
@@ -423,7 +427,7 @@ def iteracionSimplex(matriz):
 
     print("La matriz inicial es")
     imprimirMatriz(matriz)
-    print("")
+    #print("")
 
     #GUARDAMOS LA MATRIZ INICIAL EN EL STRING SOLUCION
     textoSolucion += "La matriz inicial es \n"+matrizToString(matriz)+"\n"
@@ -468,12 +472,12 @@ def iteracionSimplex(matriz):
         textoSolucion += matrizToString(matriz) + "\n"
         matrizSolucion = matriz
 
-        print("La matriz en la iteracion " + str(iteracion) + " es")
-        imprimirMatriz(matriz)
-        print("")
+        #print("La matriz en la iteracion " + str(iteracion) + " es")
+        #imprimirMatriz(matriz)
+        #print("")
         if (esDegenerada(matriz, variables)):
             textoSolucion += "La iteracion "+str(iteracion)+" muestra una solucion Degenerada\n"
-            print("Es degenerada")
+            #print("Es degenerada")
 
 
         iteracion += 1
@@ -527,7 +531,7 @@ def main():
         archivoSolucion.write(texto)
 
 
-        print("Matriz Solucion Final: ")
+        print("\nMatriz Solucion Final: ")
         imprimirMatriz(matrizSolucion)
         archivoSolucion.write("Matriz Solucion Final: \n "+matrizToString(matrizSolucion)+"\n")
 
@@ -538,11 +542,11 @@ def main():
 
 
 
-    BF = crearBasicaFactible(matrizSolucion)
-    print(BF)
-    texto += BF
-    archivoSolucion.write(texto)
-    archivoSolucion.close()
+        BF = crearBasicaFactible(matrizSolucion)
+        print(BF)
+        texto += BF
+        archivoSolucion.write(texto)
+        archivoSolucion.close()
 
 main()
 
