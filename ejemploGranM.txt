@@ -1,12 +1,5 @@
-1,min,2,3
-<<<<<<< HEAD
+1,max,2,3
 3,1
 1,1,>=,3
 2,1,<=,4
 1,1,=,3
-=======
-4,1
-3,1,=,3
-4,3,>=,6
-1,2,<=,4
->>>>>>> parent of 71b2a32... Se crea la funcion para modificar la funcion objetivo pero se mantiene documentada donde se usa porque aun no funciona correctamente
