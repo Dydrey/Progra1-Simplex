@@ -44,7 +44,7 @@ def Metodo(metodo, variables, restricciones, coeficientes, listaRestricciones, o
 
     elif metodo == 1:
         matriz = crearMatrizGranM(variables, restricciones, listaRestricciones, optimizacion, coeficientes)
-        llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optimizacion, restricciones)
+        matriz = llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optimizacion, restricciones)
         textoSolucion = "Solucion Metodo Gran M \n"
         conjuntoSolucion = iteracionSimplex(matriz)
     elif metodo == 2:
@@ -74,7 +74,7 @@ def nuevaFuncionObjetivoM(matriz):
     matrizDuplicada = copy.deepcopy(matriz)
     restriccionesOriginales = copy.deepcopy(matriz[2:])
     fila1 = copy.deepcopy(matriz[0])
-    filaObjetivoSumada = matrizDuplicada[1]
+    filaObjetivoSumada = copy.deepcopy(matrizDuplicada[1])
 
     for x in range(2, len(matriz)): # recorre todas las filas de la matriz
 
@@ -200,13 +200,15 @@ def llenarMatrizGranM(matriz, variables, listaRestricciones, coeficientes, optim
         col = buscarElemEnFila(maximo, matriz[x + 2][(1 + variables):][:-1])
         matriz[2 + x][0] = matriz[0][col + 3]
 
-    '''
+
     print("LA funcion normal es")
     imprimirMatriz(matriz)
-    nuevaFuncionObjetivoM(matriz)
+
+    matriz = nuevaFuncionObjetivoM(matriz)
     print("Funcion modificada es")
     imprimirMatriz(matriz)
-    '''
+    return matriz
+
 
 
 # FUNCION PARA CREAR LA MATRIZ DE GRAN M
@@ -329,7 +331,7 @@ def buscarFilMenor(matriz, colMenor):
     resultado = 0
     while i < len(matriz):
         if (matriz[i][colMenor] != 0) and (matriz[i][len(matriz[i]) - 1] != 0):
-            valorLD = (matriz[i][len(matriz[i]) - 1] / matriz[i][colMenor])
+            valorLD = round(matriz[i][len(matriz[i]) - 1] / (matriz[i][colMenor]), 3)
             if ((valorLD < filMenor) and (valorLD > 0)):
                 filMenor = valorLD
                 resultado = i
