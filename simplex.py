@@ -394,7 +394,8 @@ def esNoFactible(matriz):
 # Verifica la fila de variables con la columna 0 final, para obtener si hay soluciones para las variables basicas
 def crearBasicaFactible(matriz):
 
-    solucionBasica = "Z = "+str(matriz[1][len(matriz[1])-1]) +" con, BF = ("
+    solucionBasica = "Respuesta Final: Z = "+str(matriz[1][len(matriz[1])-1]) +" con, BF = ("
+    arregloSoluciones = [0]*(len(matriz[0])-2)
 
     #recorre las columnas
     for j in range(1, len(matriz[0])-1):
@@ -403,13 +404,9 @@ def crearBasicaFactible(matriz):
         for i in range(2, len(matriz)):
 
             if (matriz[0][j] == matriz[i][0]):
+                    arregloSoluciones[j-1] = matriz[i][len(matriz[1])-1]
 
-
-                    solucionBasica += " "+str(matriz[i][len(matriz[1])-1])
-            #else:
-            #solucionBasica += " O "
-
-    solucionBasica += ")"
+    solucionBasica += ', '.join([str(elem) for elem in arregloSoluciones])+ ")"
     return solucionBasica
 
 # fPara solucion no acotada. Cuando en U hay un numero negativo (Se pueden hacer iteraciones) y todos los numeros debajo de este
