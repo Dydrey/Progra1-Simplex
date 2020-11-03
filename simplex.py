@@ -392,7 +392,7 @@ def esNoFactible(matriz):
 
 # Para el final del recorrido. Compone lo que seria las soluciones para escribirlas en el archivo de texto
 # Verifica la fila de variables con la columna 0 final, para obtener si hay soluciones para las variables basicas
-def crearBasicaFactible(matriz, variables):
+def crearBasicaFactible(matriz):
 
     solucionBasica = "Z = "+str(matriz[1][len(matriz[1])-1]) +" con, BF = ("
 
@@ -555,7 +555,7 @@ def main():
 
 
 
-    BF = crearBasicaFactible(matrizSolucion, variables)
+    BF = crearBasicaFactible(matrizSolucion)
     print(BF)
     texto += BF
     archivoSolucion.write(texto)
